@@ -1,0 +1,23 @@
+# For full Dockerfile build
+node_modules
+npm-debug.log
+.cache
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+README.md
+CHANGELOG.md
+.DS_Store
+.vscode
+.idea
+*.log
+coverage
+.nyc_output
+dist
+build
+Dockerfile.simple
+deploy.sh
+docker-compose.yml
+
