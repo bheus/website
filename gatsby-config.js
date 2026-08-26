@@ -1,5 +1,3 @@
-const path = require('path')
-
 require(`dotenv`).config({
     path: `.env`,
 })
@@ -7,42 +5,23 @@ require(`dotenv`).config({
 module.exports = {
     siteMetadata: {
         siteTitle: `Brendan Heussler`,
-        siteTitleAlt: `Brendan Heussler`,
+        siteTitleAlt: `Brendan Heussler — Software Consultant`,
         siteUrl: `https://builtbybrendan.com`,
-        siteDescription: `I'm Brendan, currently living in San Diego, California.  I'm a Full Stack Software Developer at Intuit. I'm working on the chat platform used in TurboTax and Quickbooks.`,
+        siteDescription: `Independent software consultant in San Diego. I build resilient web products, scalable platforms, and practical automation.`,
         siteLanguage: `en`,
         author: `@beedaan`,
     },
     plugins: [
-        {
-            resolve: `@lekoarts/gatsby-theme-minimal-blog`,
-            options: {
-                navigation: [
-                    {
-                        title: `About`,
-                        slug: `/about`,
-                    },
-                ],
-                externalLinks: [
-                    {
-                        name: `GitHub`,
-                        url: `https://github.com/moose-byte`,
-                    },
-                ],
-                /* Required because we are using gatsby-plugin-mdx */
-                mdx: false
-            },
-        },
         `gatsby-plugin-sitemap`,
         {
             resolve: `gatsby-plugin-manifest`,
             options: {
-                name: `Brendan Heussler - Software Engineer is San Diego`,
+                name: `Brendan Heussler — Software Consultant in San Diego`,
                 short_name: `Brendan Heussler`,
-                description: `I'm Brendan, currently living in San Diego, California.  I'm a Full Stack Software Developer at Intuit. I'm working on the chat platform used in TurboTax and Quickbooks.`,
+                description: `Independent software consultant in San Diego.`,
                 start_url: `/`,
-                background_color: `#fff`,
-                theme_color: `#42A5F5`,
+                background_color: `#f4efe4`,
+                theme_color: `#263d31`,
                 display: `standalone`,
                 icons: [
                     {
@@ -59,45 +38,6 @@ module.exports = {
             },
         },
         `gatsby-plugin-netlify`,
-        {
-            resolve: `gatsby-source-filesystem`,
-            options: {
-                name: `images`,
-                path: path.join(__dirname, `src`, `img`),
-            },
-        },
-        `gatsby-plugin-image`,
-        `gatsby-transformer-sharp`,
         `gatsby-plugin-sharp`,
-        {
-            resolve: `gatsby-plugin-mdx`,
-            options: {
-                gatsbyRemarkPlugins: [
-                    {
-                        resolve: `gatsby-remark-images`,
-                        options: {
-                            linkImagesToOriginal: false,
-                            withWebp: true,
-                            quality: 85,
-                            tracedSVG: true
-                        },
-                    },
-                ],
-            },
-        },
-        {
-            resolve: `gatsby-omni-font-loader`,
-            options: {
-                enableListener: true,
-                preconnect: [`https://fonts.googleapis.com`, `https://fonts.gstatic.com`],
-                web: [
-                    {
-                        name: `IBM Plex Sans`,
-                        file: `https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;700&display=swap`,
-                    },
-                ],
-            },
-        },
-        // `gatsby-plugin-webpack-bundle-analyser-v2`,
     ],
 }
