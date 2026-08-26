@@ -2,26 +2,21 @@
   "private": true,
   "name": "built-by-brendan",
   "description": "Personal consulting site for Brendan Heussler.",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "author": "Brendan Heussler",
   "license": "MIT",
+  "type": "module",
   "scripts": {
-    "build": "gatsby build",
-    "develop": "gatsby develop",
-    "develop:cypress": "cross-env CYPRESS_SUPPORT=y yarn develop",
-    "build:cypress": "cross-env CYPRESS_SUPPORT=y yarn build",
-    "start": "gatsby develop",
-    "serve": "gatsby serve",
-    "clean": "gatsby clean"
+    "dev": "vite",
+    "build": "vite build && vite build --ssr src/entry-server.jsx --outDir dist-ssr && node prerender.mjs",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "gatsby": "^4.0.0",
-    "gatsby-plugin-manifest": "4.25.0",
-    "gatsby-plugin-netlify": "^4.0.0",
-    "gatsby-plugin-sharp": "^4.0.0",
-    "gatsby-plugin-sitemap": "^5.0.0",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "react-helmet": "^6.1.0"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.1.0",
+    "vite": "^8.2.2"
   }
 }

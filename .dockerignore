@@ -17,8 +17,8 @@ coverage
 .nyc_output
 dist
 build
-Dockerfile.simple
-deploy.sh
 docker-compose.yml
 docker-compose.override.yml
+public
+dist-ssr
 .github
