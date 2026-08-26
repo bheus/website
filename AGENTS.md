@@ -139,6 +139,15 @@ Order matters: the webhook fires only after the image push, so Portainer never
 redeploys onto a stale `:latest`. If the secret is absent the workflow still
 publishes the image and simply skips the redeploy.
 
+The secret must use the tunnel hostname `https://deploy.builtbybrendan.com/api/stacks/webhooks/<uuid>`,
+not the `apple-pi.lan:9000` URL Portainer's UI displays — GitHub's runners cannot
+resolve `apple-pi.lan`. Cloudflare exposes only that one path and 404s everything
+else on the host, so the rest of the Portainer API stays unreachable.
+
+Stack environment variables (contact/SMTP) reach the container only on redeploy;
+saving them in Portainer alone changes nothing. Delivery uses Resend, whose API
+key is shared with the `guiltyspark` stack — rotating it means updating both.
+
 `docker-compose.yml` is the file Portainer deploys, so it must stand alone — no
 `build:` section, and every variable needs an inline default, because Portainer
 supplies no `.env` and no override file. `docker-compose.override.yml` is local
