@@ -52,16 +52,32 @@ redeploys onto a stale image.
    - Build method: **Web editor**, pasting this repository's `docker-compose.yml`
    - Environment variables: the contact/SMTP values from `.env.example`
    - Enable **GitOps updates** → **Webhook**, with **re-pull image** enabled
-   - Copy the generated webhook URL
+   - Copy the generated webhook UUID
 
-2. **Store the webhook in GitHub.**
+2. **Store the webhook in GitHub, rewritten to the tunnel hostname.** Portainer's
+   UI shows the webhook as `http://apple-pi.lan:9000/api/stacks/webhooks/<uuid>`,
+   which GitHub's runners cannot reach — `apple-pi.lan` resolves only on the LAN.
+   The Cloudflare tunnel exposes exactly this one path instead:
+
+   ```yaml
+   - hostname: deploy.builtbybrendan.com
+     path: ^/api/stacks/webhooks/.*$
+     service: http://localhost:9000
+   - hostname: deploy.builtbybrendan.com
+     service: http_status:404
+   ```
+
+   So keep the UUID and swap the host:
 
    ```bash
    gh secret set PORTAINER_WEBSITE_WEBHOOK --repo bheus/website
+   # https://deploy.builtbybrendan.com/api/stacks/webhooks/<uuid>
    ```
 
    Without this secret the workflow still builds and publishes the image; it just
-   skips the redeploy step.
+   skips the redeploy step. A `404` with `"Unable to find the stack by webhook ID"`
+   means the UUID no longer matches a stack — deleting and recreating the stack
+   usually preserves it, but confirm before assuming.
 
 3. **Confirm GHCR visibility.** The Pi pulls anonymously, so the
    `ghcr.io/bheus/website` package must be public, or Portainer needs a registry
@@ -73,6 +89,19 @@ Contact settings live in the Portainer stack's environment variables, using
 `.env.example` as the template. They are never baked into the image and never
 reach the browser: the form posts to the same-origin `/api/contact` endpoint,
 which validates the submission before relaying it through SMTP.
+
+Delivery goes through Resend: `SMTP_HOST=smtp.resend.com`, `SMTP_USER` is the
+literal string `resend`, and `SMTP_PASS` is a Resend API key. Set `CONTACT_FROM`
+explicitly — `server/index.js` falls back to `SMTP_USER` as the sender, which is
+not an address, and `CONTACT_FROM` is absent from the required-variable check, so
+omitting it fails only at send time. `TRUST_PROXY=true` is required behind the
+tunnel; without it every visitor shares one rate-limit bucket.
+
+The Resend API key is currently shared with the `guiltyspark` stack, so rotating
+it means updating both.
+
+Stack environment variables reach a container only on redeploy. Saving them in
+Portainer changes nothing until the stack is redeployed or the webhook fires.
 
 The compose file also reads an optional `.env` beside it if one is present, so an
 existing `/home/bheussler/website/.env` keeps working.
