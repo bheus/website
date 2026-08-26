@@ -20,4 +20,5 @@ build
 Dockerfile.simple
 deploy.sh
 docker-compose.yml
-
+docker-compose.override.yml
+.github

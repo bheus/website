@@ -27,67 +27,66 @@ This guide explains how to deploy your Gatsby website as a Docker container to y
    sudo apt-get install -y docker-compose-plugin
    ```
 
-## Deployment Methods
+## Automatic Deployment (primary path)
+
+Every push to `master` builds an arm64 image, publishes it to GHCR, and asks
+Portainer to redeploy the stack. Nothing needs to run from a laptop.
+
+```
+push to master
+  -> .github/workflows/ci-release.yml
+  -> ghcr.io/bheus/website:<sha> and :latest
+  -> POST ${{ secrets.PORTAINER_WEBSITE_WEBHOOK }}
+  -> Portainer re-pulls :latest and restarts brendan-website
+```
+
+The webhook is fired only after the image push succeeds, so the stack never
+redeploys onto a stale image.
+
+### One-time setup
+
+1. **Create the Portainer stack.** The `website` stack (id 3) was originally an
+   *external* stack, which cannot own a webhook. Recreate it as a Portainer-managed
+   stack at <http://apple-pi.lan:9000> → Stacks → Add stack:
+   - Name: `website`
+   - Build method: **Web editor**, pasting this repository's `docker-compose.yml`
+   - Environment variables: the contact/SMTP values from `.env.example`
+   - Enable **GitOps updates** → **Webhook**, with **re-pull image** enabled
+   - Copy the generated webhook URL
+
+2. **Store the webhook in GitHub.**
+
+   ```bash
+   gh secret set PORTAINER_WEBSITE_WEBHOOK --repo bheus/website
+   ```
+
+   Without this secret the workflow still builds and publishes the image; it just
+   skips the redeploy step.
+
+3. **Confirm GHCR visibility.** The Pi pulls anonymously, so the
+   `ghcr.io/bheus/website` package must be public, or Portainer needs a registry
+   credential for it.
 
 ### Configure contact delivery
 
-Create `/home/bheussler/website/.env` on `apple-pi` before the first deployment. Use `.env.example` as the template and provide the real destination address plus SMTP credentials. Keep this file on the server; do not commit or copy it into the Docker image.
+Contact settings live in the Portainer stack's environment variables, using
+`.env.example` as the template. They are never baked into the image and never
+reach the browser: the form posts to the same-origin `/api/contact` endpoint,
+which validates the submission before relaying it through SMTP.
 
-The browser never receives the destination address. Contact messages go to the same-origin `/api/contact` endpoint, which validates the submission before relaying it through SMTP.
+The compose file also reads an optional `.env` beside it if one is present, so an
+existing `/home/bheussler/website/.env` keeps working.
 
-### Method 1: Simple Build (Recommended)
+## Manual Deployment (fallback)
 
-This method builds the Gatsby site locally and only containerizes the static files. It's faster and uses less memory.
-
-```bash
-./deploy.sh
-```
-
-### Method 2: Full Docker Build
-
-This method builds everything inside Docker. Use this if you want a completely reproducible build environment.
+`deploy.sh` still builds locally and ships the image over SSH. Use it only when
+GitHub Actions or Portainer is unavailable — it bypasses the Portainer stack and
+leaves the host on an image that no commit points at.
 
 ```bash
-./deploy.sh --full-build
+./deploy.sh              # build Gatsby locally, containerize the static output
+./deploy.sh --full-build # build everything inside Docker
 ```
-
-## What the Deployment Script Does
-
-1. Builds your Gatsby site (locally or in Docker)
-2. Creates a Docker image with the static site and protected contact relay
-3. Transfers the image to your Raspberry Pi
-4. Deploys and starts the container
-5. Your site becomes available at `http://apple-pi`
-
-## Manual Deployment Steps
-
-If you prefer to deploy manually:
-
-1. **Build the site locally:**
-   ```bash
-   npm run build
-   ```
-
-2. **Build the Docker image:**
-   ```bash
-   docker build -f Dockerfile.simple -t brendan-website:latest .
-   ```
-
-3. **Save and transfer the image:**
-   ```bash
-   docker save brendan-website:latest | gzip > brendan-website.tar.gz
-   scp brendan-website.tar.gz bheussler@apple-pi:/home/bheussler/website/
-   scp docker-compose.yml bheussler@apple-pi:/home/bheussler/website/
-   ```
-
-4. **Deploy on Raspberry Pi:**
-   ```bash
-   ssh bheussler@apple-pi
-   cd /home/bheussler/website
-   docker load < brendan-website.tar.gz
-   docker compose down
-   docker compose up -d
-   ```
 
 ## Managing Your Deployment
 
@@ -138,11 +137,13 @@ The simple build method creates a much smaller image (~50MB) compared to the ful
 
 ## File Structure
 
-- `Dockerfile` - Full build (builds Gatsby inside Docker)
-- `Dockerfile.simple` - Simple build (uses pre-built static files)
-- `docker-compose.yml` - Container orchestration
+- `.github/workflows/ci-release.yml` - Build, publish to GHCR, trigger Portainer
+- `Dockerfile` - Full build (builds Gatsby inside Docker); this is what CI publishes
+- `Dockerfile.simple` - Simple build (uses pre-built static files), for `deploy.sh`
+- `docker-compose.yml` - The stack Portainer deploys; pulls the published image
+- `docker-compose.override.yml` - Local-only, restores `docker compose build`
 - `server/index.js` - Static web server and contact relay
-- `deploy.sh` - Automated deployment script
+- `deploy.sh` - Fallback manual deployment script
 - `.dockerignore` - Files to exclude from Docker build
 
 ## Performance Tips

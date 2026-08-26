@@ -1,0 +1,8 @@
+# Local development only. Portainer deploys docker-compose.yml on its own, so
+# this file is what makes `docker compose build` produce the image locally
+# instead of pulling the published one.
+services:
+  website:
+    build:
+      context: .
+      dockerfile: Dockerfile

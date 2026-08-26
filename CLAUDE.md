@@ -43,7 +43,9 @@ The exact approved destinations and current copy are documented in `AGENTS.md` a
 - Node 18 production server handles static files and the contact relay; do not assume nginx-only hosting.
 - Dockerized preview is on host port 80 and container port 8080. Gatsby development uses port 8000.
 - Always use `docker compose`, never `docker-compose`.
-- Do not deploy to `apple-pi` unless Brendan explicitly requests it.
+- Pushing to `master` autodeploys: CI publishes `ghcr.io/bheus/website:latest` and then triggers the Portainer `website` stack webhook on `apple-pi`.
+- `docker-compose.yml` is deployed by Portainer by itself. Keep it free of `build:` and give every variable an inline default. Local `docker compose build` comes from `docker-compose.override.yml`.
+- Do not deploy to `apple-pi` by hand unless Brendan explicitly requests it.
 - Validate material changes with `git diff --check`, a production build, desktop/mobile inspection, `/health`, and Lighthouse where appropriate.
 
 If this file and `AGENTS.md` ever disagree, follow `AGENTS.md` and update this summary to match.

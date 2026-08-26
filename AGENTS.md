@@ -121,12 +121,31 @@ When updating scripts or documentation, preserve this command in `deploy.sh`, `D
 
 - Target host: `apple-pi` / `apple-pi.lan` (Raspberry Pi)
 - User: `bheussler`
-- Deploy directory: `/home/bheussler/website`
 - Container name: `brendan-website`
 - Public host port: 80
 - Container port: 8080
-- Keep the production `.env` on the Pi and outside the Docker image and Git repository.
-- Use the simple/local Gatsby build path for resource-constrained deployments when possible; a full Docker build is more memory-intensive.
+- Orchestrated by the Portainer stack named `website` at <http://apple-pi.lan:9000>.
+- Keep contact/SMTP values in the Portainer stack's environment variables, outside the Docker image and Git repository. An optional `.env` beside the compose file is still honored.
+
+### Autodeploy
+
+Pushing to `master` runs `.github/workflows/ci-release.yml`, which builds a native
+arm64 image, publishes `ghcr.io/bheus/website:<sha>` and `:latest`, then POSTs the
+Portainer stack webhook held in the `PORTAINER_WEBSITE_WEBHOOK` repository secret.
+This mirrors the pipeline in the `guiltyspark` and `abraham` repositories.
+
+Order matters: the webhook fires only after the image push, so Portainer never
+redeploys onto a stale `:latest`. If the secret is absent the workflow still
+publishes the image and simply skips the redeploy.
+
+`docker-compose.yml` is the file Portainer deploys, so it must stand alone — no
+`build:` section, and every variable needs an inline default, because Portainer
+supplies no `.env` and no override file. `docker-compose.override.yml` is local
+only and is what keeps `docker compose build` working on a laptop.
+
+`deploy.sh` remains as a manual fallback. It bypasses Portainer and leaves the host
+on an image no commit points at, so prefer the pipeline. Use the simple/local Gatsby
+build path when running it; a full Docker build is more memory-intensive.
 
 ## Working Safely
 
