@@ -1,65 +1,136 @@
 # Agent Notes
 
-This file contains important notes and reminders for AI agents working on this project.
+This is the canonical product, design, and implementation brief for agents working on Brendan Heussler's personal consulting website. Preserve these decisions unless Brendan explicitly changes them.
+
+## Product Direction
+
+- This is a minimalist, single-page landing site for Brendan's software consulting and selected work.
+- The experience should feel calm, capable, personal, and down to earth. Communicate that through restraint, spacing, color, typography, and landscape motifs—not by calling Brendan "chill."
+- Brendan is based in **San Diego, California**. The visual atmosphere may draw from inland North County valleys: warm sun, rolling dry hills, trails, sage, clay, and quiet residential foothills.
+- Never mention **Poway** in visible site copy. It is visual inspiration only.
+- Do not say Brendan is "available for work." Use a straightforward **Contact me** section and let visitors initiate a conversation.
+- Avoid generic startup/SaaS aesthetics, loud gradients, excessive animation, inflated claims, and sales-heavy prose.
+
+## Current Visual System
+
+- The page uses a warm editorial palette defined in `src/styles/site.css`: forest green, sage, cream, paper, sand, and clay.
+- Landscape elements are made with CSS so the San Diego valley atmosphere stays subtle and fast-loading.
+- Typography pairs a restrained system sans-serif with an editorial serif for selected accents.
+- The layout should remain spacious and composed on desktop, then stack cleanly on mobile.
+- Motion is quiet and optional. Respect `prefers-reduced-motion`.
+
+### Profile image
+
+- Use `static/brendan-profile.webp`, derived from Brendan's supplied illustrated portrait.
+- Treat it as a small profile/headshot accent in the About section, never as a hero image or full-height desktop image.
+- Keep the crop circular and explicitly square to prevent grid stretching.
+- Current intended sizes are 240×240px desktop, 200×200px tablet, and 180×180px mobile. The `--portrait-size` rules in `src/styles/site.css` are intentional.
+- Preserve `object-fit: cover` and the current face-centered crop unless a replacement portrait is supplied.
+
+## Content Decisions
+
+The homepage separates **Professional work** from **Personal work**.
+
+### Professional work
+
+1. **TurboTax local stores and experts**
+   - Explain the scalable system for hundreds of stores and thousands of expert pages that connect local customers with tax services.
+   - Example destination: `https://turbotax.intuit.com/local-tax-offices/ny/new-york/d51a4afe6691489aa78ee8793a6bc278/`
+2. **Certified Pickleball Player**
+   - Present it as a player platform spanning credentials, personalized gear, community discovery, and match analysis.
+   - Destination: `https://www.certifiedpickleballplayer.com/`
+
+### Personal work
+
+1. **Abraham**
+   - Describe it as a trading algorithm/system.
+   - The current claim is that it beats the S&P 500 **in historical testing**; preserve that qualification.
+   - Do not label Abraham "private" or dwell on its access model.
+   - There is no public product link. Send interested visitors to the contact section with language such as "Contact me to learn more."
+2. **GuiltySpark**
+   - Describe it as a log-monitoring/autonomous engineering tool that finds bugs in context and turns incidents into tested fixes.
+   - Destination: `https://guiltyspark.builtbybrendan.com/`
+
+Keep the prose confident but plainspoken. The work itself should establish credibility.
+
+## Contact and Privacy
+
+- Never put Brendan's email address in client HTML, JavaScript, metadata, a `mailto:` URL, or other browser-delivered assets.
+- The form posts to the same-origin `/api/contact` endpoint in `server/index.js`. Destination and sender addresses exist only in server environment variables.
+- Preserve the current anti-bot layers: one-time challenge, client-side SHA-256 proof of work, minimum completion time, honeypot, same-origin validation, content checks, and per-IP rate limiting.
+- Do not replace failed delivery with a fake success response. A submission is successful only after the SMTP relay accepts it.
+- SMTP configuration belongs in an uncommitted `.env`, using `.env.example` as the template. Never commit, print, or expose real credentials.
+- Without SMTP variables, a valid local submission intentionally returns HTTP 503 with "Contact delivery is temporarily unavailable."
+- At the time these notes were written, neither this checkout nor `/home/bheussler/website` on `apple-pi` had a real `.env`; contact delivery still requires configuration.
+- HTML responses use `no-cache, max-age=0, must-revalidate` so redesigns do not remain hidden behind stale HTML. Fingerprinted JS and CSS remain immutable.
+
+## Architecture
+
+- **Frontend:** Gatsby 4 generating a custom React-based static page.
+- **Styling:** Custom CSS in `src/styles/site.css`; the old `@lekoarts/gatsby-theme-minimal-blog` UI is no longer used.
+- **Production runtime:** Node 18 serves the generated site and implements the protected contact relay. Production is no longer nginx-only.
+- **Containerization:** Docker / Docker Compose.
+- **Deployment target:** Raspberry Pi.
+
+### Primary files
+
+- `src/pages/index.jsx` — homepage structure, copy, project cards, and contact form client logic
+- `src/styles/site.css` — responsive layout and visual system
+- `static/brendan-profile.webp` — optimized portrait
+- `server/index.js` — static server, cache/security headers, anti-bot validation, and SMTP relay
+- `.env.example` — server-only contact configuration template
+- `docker-compose.yml` — local/production container configuration
+- `DEPLOYMENT.md` — Raspberry Pi deployment instructions
+
+## Local Development and Validation
+
+The project expects Node 18.
+
+```bash
+npm install
+npm run develop
+```
+
+Gatsby development runs at `http://localhost:8000`.
+
+For the production container:
+
+```bash
+docker compose build
+docker compose up -d
+```
+
+The Dockerized site is available at `http://localhost` on host port **80**; the Node process listens on container port **8080**.
+
+Before handing off visual changes:
+
+1. Run `git diff --check`.
+2. Run a production build, preferably `docker compose build`.
+3. Restart with `docker compose up -d` when local preview should reflect the change.
+4. Verify `http://127.0.0.1/health` returns `{"ok":true}`.
+5. Inspect both desktop and mobile layouts. Measure critical image dimensions in the browser when a crop or stretching bug is involved.
+6. Run Lighthouse for material frontend changes. The redesign previously reached 98 Performance and 100 Accessibility, Best Practices, and SEO; avoid regressions.
 
 ## Docker Compose Command
 
-**IMPORTANT**: Use `docker compose` (Docker Compose V2) instead of `docker-compose` (V1).
+**Always use Docker Compose V2:** `docker compose`, never the deprecated `docker-compose` command.
 
-Docker Compose V2 is the modern, integrated version that comes with Docker Desktop and recent Docker installations. The command is:
-
-```bash
-# Correct (V2)
-docker compose up -d
-docker compose down
-docker compose restart
-
-# Incorrect (V1 - deprecated)
-docker-compose up -d
-docker-compose down
-docker-compose restart
-```
-
-### Why This Matters
-
-- Docker Compose V2 (`docker compose`) is now the default and recommended version
-- It's integrated into the Docker CLI as a plugin
-- V1 (`docker-compose`) is a standalone Python application that is deprecated
-- Modern systems (including Raspberry Pi with recent Docker installations) use V2
-
-### Files That Use Docker Compose
-
-When updating or creating scripts, ensure these files use `docker compose`:
-- `deploy.sh` - Deployment script
-- `DEPLOYMENT.md` - Documentation
-- Any other scripts or documentation that reference Docker Compose
-
-## Project Structure
-
-This is a Gatsby-based static website deployed as a Docker container to a Raspberry Pi.
-
-### Key Technologies
-- **Frontend**: Gatsby (React-based static site generator)
-- **Theme**: @lekoarts/gatsby-theme-minimal-blog
-- **Containerization**: Docker with nginx-alpine
-- **Deployment Target**: Raspberry Pi (ARM architecture)
-
-### Build Methods
-1. **Simple Build** (recommended): Build Gatsby locally, containerize static files
-2. **Full Build**: Build everything inside Docker (more memory intensive)
+When updating scripts or documentation, preserve this command in `deploy.sh`, `DEPLOYMENT.md`, and other operational files.
 
 ## Deployment Notes
 
-- Target host: `apple-pi` (Raspberry Pi)
+- Target host: `apple-pi` / `apple-pi.lan` (Raspberry Pi)
 - User: `bheussler`
 - Deploy directory: `/home/bheussler/website`
 - Container name: `brendan-website`
-- Port: 80
+- Public host port: 80
+- Container port: 8080
+- Keep the production `.env` on the Pi and outside the Docker image and Git repository.
+- Use the simple/local Gatsby build path for resource-constrained deployments when possible; a full Docker build is more memory-intensive.
 
-## Common Issues
+## Working Safely
 
-### Memory Issues During Build
-- Gatsby builds can be memory-intensive
-- Use the simple build method (`Dockerfile.simple`) for resource-constrained environments
-- The full build (`Dockerfile`) may fail on systems with limited RAM
-
+- Preserve Brendan's unrelated uncommitted changes.
+- Do not deploy to the Pi unless Brendan asks for deployment.
+- Do not weaken the privacy or anti-bot behavior to make local demonstrations appear successful.
+- If contact credentials are missing, explain the configuration requirement instead of inventing credentials or exposing an email address.

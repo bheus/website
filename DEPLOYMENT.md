@@ -29,6 +29,12 @@ This guide explains how to deploy your Gatsby website as a Docker container to y
 
 ## Deployment Methods
 
+### Configure contact delivery
+
+Create `/home/bheussler/website/.env` on `apple-pi` before the first deployment. Use `.env.example` as the template and provide the real destination address plus SMTP credentials. Keep this file on the server; do not commit or copy it into the Docker image.
+
+The browser never receives the destination address. Contact messages go to the same-origin `/api/contact` endpoint, which validates the submission before relaying it through SMTP.
+
 ### Method 1: Simple Build (Recommended)
 
 This method builds the Gatsby site locally and only containerizes the static files. It's faster and uses less memory.
@@ -48,7 +54,7 @@ This method builds everything inside Docker. Use this if you want a completely r
 ## What the Deployment Script Does
 
 1. Builds your Gatsby site (locally or in Docker)
-2. Creates a Docker image with nginx serving the static files
+2. Creates a Docker image with the static site and protected contact relay
 3. Transfers the image to your Raspberry Pi
 4. Deploys and starts the container
 5. Your site becomes available at `http://apple-pi`
@@ -135,23 +141,23 @@ The simple build method creates a much smaller image (~50MB) compared to the ful
 - `Dockerfile` - Full build (builds Gatsby inside Docker)
 - `Dockerfile.simple` - Simple build (uses pre-built static files)
 - `docker-compose.yml` - Container orchestration
-- `nginx.conf` - Web server configuration
+- `server/index.js` - Static web server and contact relay
 - `deploy.sh` - Automated deployment script
 - `.dockerignore` - Files to exclude from Docker build
 
 ## Performance Tips
 
-1. The nginx configuration includes gzip compression for faster loading
+1. The web server includes gzip compression for faster loading
 2. Static assets are cached for 1 year
 3. The container uses minimal resources (perfect for Raspberry Pi)
 4. Health checks ensure the container is always running
 
 ## Security
 
-The nginx configuration includes:
-- Security headers (X-Frame-Options, X-Content-Type-Options, X-XSS-Protection)
+The web server includes:
+- A restrictive content security policy plus X-Frame-Options and X-Content-Type-Options headers
 - Proper MIME type handling
 - No directory listing
+- Same-origin contact submissions, proof-of-work validation, a honeypot, and rate limiting
 
 For HTTPS, consider setting up a reverse proxy (like Caddy or nginx-proxy) in front of this container.
-

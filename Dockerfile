@@ -24,22 +24,23 @@ ENV NODE_OPTIONS="--max-old-space-size=2048"
 # Build the Gatsby site
 RUN npm run build
 
-# Stage 2: Serve with nginx
-FROM nginx:alpine
+# Stage 2: Serve static files and relay contact messages
+FROM node:18-alpine
 
-# Copy custom nginx config
-COPY nginx.conf /etc/nginx/nginx.conf
+WORKDIR /app
 
-# Copy built site from builder stage
-COPY --from=builder /app/public /usr/share/nginx/html
+COPY server/package*.json ./server/
+RUN cd server && npm install --omit=dev && npm cache clean --force
+COPY server/index.js ./server/index.js
+COPY --from=builder /app/public ./public
 
-# Expose port 80
-EXPOSE 80
+ENV NODE_ENV=production
+ENV PORT=8080
 
-# Health check
+EXPOSE 8080
+
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost/ || exit 1
+    CMD wget -qO- http://127.0.0.1:8080/health >/dev/null || exit 1
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
-
+USER node
+CMD ["node", "server/index.js"]

@@ -1,21 +1,21 @@
-# Simple Dockerfile - builds site locally first, then containerizes
-# This is more efficient for Raspberry Pi deployment
+# Simple Dockerfile - packages a locally-built site with the contact relay
 
-FROM nginx:alpine
+FROM node:18-alpine
 
-# Copy custom nginx config
-COPY nginx.conf /etc/nginx/nginx.conf
+WORKDIR /app
 
-# Copy pre-built site
-COPY public /usr/share/nginx/html
+COPY server/package*.json ./server/
+RUN cd server && npm install --omit=dev && npm cache clean --force
+COPY server/index.js ./server/index.js
+COPY public ./public
 
-# Expose port 80
-EXPOSE 80
+ENV NODE_ENV=production
+ENV PORT=8080
 
-# Health check
+EXPOSE 8080
+
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost/ || exit 1
+    CMD wget -qO- http://127.0.0.1:8080/health >/dev/null || exit 1
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
-
+USER node
+CMD ["node", "server/index.js"]
