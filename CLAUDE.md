@@ -51,4 +51,11 @@ The exact approved destinations and current copy are documented in `AGENTS.md` a
 - Validate material changes with `git diff --check`, a production build, desktop/mobile inspection, `/health`, and Lighthouse where appropriate.
 - Deployment is autodeploy only; there is no `deploy.sh` fallback.
 
+## Known Issues
+
+`AGENTS.md` has a **Known Issues** section covering the Cloudflare cache override, two
+failing accessibility audits, and a mobile FCP regression. Read it before assuming a
+surprising measurement is new, and note that the cache issue is a Cloudflare zone
+setting — changing `server/index.js` will not fix it.
+
 If this file and `AGENTS.md` ever disagree, follow `AGENTS.md` and update this summary to match.

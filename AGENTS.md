@@ -161,6 +161,78 @@ There is no manual deployment path any more. `deploy.sh`, `Dockerfile.simple`, a
 `.dockerignore.simple` were removed with the Gatsby migration: they bypassed Portainer
 and left the host on an image no commit pointed at. Deploy by pushing to `master`.
 
+## Known Issues
+
+Open problems, each verified against production. None block deployment. Confirm a
+finding still reproduces before acting on it.
+
+### Cloudflare overrides the origin's cache headers
+
+The origin serves non-fingerprinted assets with a short TTL, but Cloudflare rewrites
+it to a year:
+
+```
+Pi origin:   Cache-Control: public, max-age=300
+Cloudflare:  cache-control: public, max-age=31536000, immutable
+```
+
+`server/index.js` is correct — it applies `immutable` only to files matching
+`\.[a-f0-9]{8,}\.(js|css)$`, so hashed bundles are immutable and `favicon.ico`,
+`apple-touch-icon.png`, `android-chrome-*`, `site.webmanifest`, `robots.txt`, and
+`sitemap.xml` are not. The override is a zone setting, so **do not "fix" this in
+`server/index.js` — the change would have no effect.**
+
+Consequence: replacing any of those files leaves visitors on the old copy roughly
+forever. This already happened once, when a new `favicon.ico` sat behind a 13-hour-old
+edge entry and needed a manual purge.
+
+Fix, in the Cloudflare dashboard: set Browser Cache TTL to *Respect Existing Headers*,
+or add a Cache Rule scoped to those paths. Until then, purge the specific URL after
+changing any non-fingerprinted asset, and verify by comparing the origin and edge:
+
+```bash
+ssh bheussler@apple-pi.lan "curl -s http://127.0.0.1:80/favicon.ico | sha256sum"
+curl -s https://builtbybrendan.com/favicon.ico | shasum -a 256
+```
+
+### Two accessibility audits fail
+
+Lighthouse desktop scores 95 on accessibility because of two long-standing issues.
+Both predate the Vite migration.
+
+1. `color-contrast` on `.form-note` — the contact form's "Protected against automated
+   submissions" line does not meet the contrast ratio.
+2. `label-content-name-mismatch` on the header and footer brand link. Its
+   `aria-label="BH — Brendan Heussler, home"` does not contain the visible text, because
+   the em dash breaks the match. Screen reader users hear a name that does not match
+   what sighted users read aloud.
+
+Fixing both should reach 100. Note that mobile already scores 100 — the failures are
+weighted differently there, so measure on the desktop preset.
+
+The desktop score moved from 96 to 95 during the Vite migration without any
+accessibility change: Gatsby injected a `tabindex="-1"` focus wrapper, which made the
+`tabindex` audit applicable and passing at weight 7. Without that element the audit
+drops out of the denominator entirely. Do not chase that single point.
+
+### Mobile First Contentful Paint is slower than the Gatsby build
+
+Measured over three Lighthouse runs each, against production images:
+
+| build | FCP | LCP |
+|---|---|---|
+| Gatsby | ~676 ms | 1.65–2.29 s |
+| Vite | ~1055 ms | 1.66–1.81 s |
+
+Consistent, not run noise. Performance still scores 100 on mobile (Gatsby fluctuated
+98–100) and LCP is both better and steadier, so this is not a regression in the score.
+
+Unexplained. The leading suspect is script placement: Vite hoists the module script
+into `<head>`, where Gatsby emitted scripts at the end of `<body>`, so the preload
+scanner begins fetching the bundle before first paint. Moving it in `prerender.mjs` was
+drafted and reverted unmeasured — if picked up, measure it rather than assuming, since
+module scripts are deferred and should not be render-blocking.
+
 ## Working Safely
 
 - Preserve Brendan's unrelated uncommitted changes.
