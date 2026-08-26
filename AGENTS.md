@@ -67,7 +67,9 @@ Keep the prose confident but plainspoken. The work itself should establish credi
 
 ## Architecture
 
-- **Frontend:** Gatsby 4 generating a custom React-based static page.
+- **Frontend:** Vite building a custom React static page. Gatsby was removed once the page stopped using any Gatsby API; the build is `vite build` plus an SSR pass.
+- **Prerendering:** `prerender.mjs` renders `src/App.jsx` to markup and injects it into `public/index.html`. The page must not ship as a client-only shell — crawlers and social unfurlers would receive an empty root element.
+- **Head metadata:** plain tags in `index.html`. `react-helmet` was removed; it never worked here, because `gatsby-plugin-react-helmet` was not installed and the head block never reached the static HTML.
 - **Styling:** Custom CSS in `src/styles/site.css`; the old `@lekoarts/gatsby-theme-minimal-blog` UI is no longer used.
 - **Production runtime:** Node 18 serves the generated site and implements the protected contact relay. Production is no longer nginx-only.
 - **Containerization:** Docker / Docker Compose.
@@ -75,7 +77,9 @@ Keep the prose confident but plainspoken. The work itself should establish credi
 
 ### Primary files
 
-- `src/pages/index.jsx` — homepage structure, copy, project cards, and contact form client logic
+- `src/App.jsx` — homepage structure, copy, project cards, and contact form client logic
+- `index.html` — document shell, title, description, Open Graph, and icon links
+- `vite.config.js` / `prerender.mjs` — build configuration and the static prerender pass
 - `src/styles/site.css` — responsive layout and visual system
 - `static/brendan-profile.webp` — optimized portrait
 - `server/index.js` — static server, cache/security headers, anti-bot validation, and SMTP relay
@@ -85,14 +89,14 @@ Keep the prose confident but plainspoken. The work itself should establish credi
 
 ## Local Development and Validation
 
-The project expects Node 18.
+The build needs Node 22 or newer (Vite's floor). The production server still runs Node 18.
 
 ```bash
 npm install
-npm run develop
+npm run dev
 ```
 
-Gatsby development runs at `http://localhost:8000`.
+The dev server runs at `http://localhost:5173`.
 
 For the production container:
 
@@ -116,7 +120,7 @@ Before handing off visual changes:
 
 **Always use Docker Compose V2:** `docker compose`, never the deprecated `docker-compose` command.
 
-When updating scripts or documentation, preserve this command in `deploy.sh`, `DEPLOYMENT.md`, and other operational files.
+When updating scripts or documentation, preserve this command in `DEPLOYMENT.md` and other operational files.
 
 ## Deployment Notes
 
@@ -153,9 +157,9 @@ key is shared with the `guiltyspark` stack — rotating it means updating both.
 supplies no `.env` and no override file. `docker-compose.override.yml` is local
 only and is what keeps `docker compose build` working on a laptop.
 
-`deploy.sh` remains as a manual fallback. It bypasses Portainer and leaves the host
-on an image no commit points at, so prefer the pipeline. Use the simple/local Gatsby
-build path when running it; a full Docker build is more memory-intensive.
+There is no manual deployment path any more. `deploy.sh`, `Dockerfile.simple`, and
+`.dockerignore.simple` were removed with the Gatsby migration: they bypassed Portainer
+and left the host on an image no commit pointed at. Deploy by pushing to `master`.
 
 ## Working Safely
 

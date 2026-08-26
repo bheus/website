@@ -1,6 +1,5 @@
 import React, { useRef, useState } from "react"
-import { Helmet } from "react-helmet"
-import "../styles/site.css"
+import "./styles/site.css"
 
 const Arrow = () => (
   <svg viewBox="0 0 18 18" aria-hidden="true">
@@ -243,19 +242,9 @@ const ContactForm = () => {
   )
 }
 
-export default function HomePage() {
+export default function App() {
   return (
     <>
-      <Helmet>
-        <html lang="en" />
-        <title>Brendan Heussler — Software Consultant in San Diego</title>
-        <meta name="description" content="Independent software consultant in San Diego. Brendan Heussler builds resilient web products, scalable platforms, and practical automation." />
-        <meta name="theme-color" content="#f4efe4" />
-        <meta property="og:title" content="Brendan Heussler — Software Consultant" />
-        <meta property="og:description" content="Serious software. Easygoing process. Built in San Diego, California." />
-        <meta property="og:type" content="website" />
-      </Helmet>
-
       <header className="site-header">
         <a className="brand" href="#top" aria-label="BH — Brendan Heussler, home">
           <span className="brand-mark">BH</span>

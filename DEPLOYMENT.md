@@ -1,6 +1,6 @@
 # Deployment Guide for Raspberry Pi (apple-pi)
 
-This guide explains how to deploy your Gatsby website as a Docker container to your Raspberry Pi.
+This guide explains how the site is deployed as a Docker container to your Raspberry Pi.
 
 ## Prerequisites
 
@@ -106,17 +106,6 @@ Portainer changes nothing until the stack is redeployed or the webhook fires.
 The compose file also reads an optional `.env` beside it if one is present, so an
 existing `/home/bheussler/website/.env` keeps working.
 
-## Manual Deployment (fallback)
-
-`deploy.sh` still builds locally and ships the image over SSH. Use it only when
-GitHub Actions or Portainer is unavailable — it bypasses the Portainer stack and
-leaves the host on an image that no commit points at.
-
-```bash
-./deploy.sh              # build Gatsby locally, containerize the static output
-./deploy.sh --full-build # build everything inside Docker
-```
-
 ## Managing Your Deployment
 
 ### View logs:
@@ -157,7 +146,7 @@ ssh bheussler@apple-pi 'docker exec -it brendan-website sh'
 3. Verify port 80 is not in use: `ssh bheussler@apple-pi 'sudo netstat -tulpn | grep :80'`
 
 ### Build fails locally
-1. Clean Gatsby cache: `npm run clean`
+1. Remove the previous output: `rm -rf public`
 2. Reinstall dependencies: `rm -rf node_modules && npm install`
 3. Try building again: `npm run build`
 
@@ -167,12 +156,11 @@ The simple build method creates a much smaller image (~50MB) compared to the ful
 ## File Structure
 
 - `.github/workflows/ci-release.yml` - Build, publish to GHCR, trigger Portainer
-- `Dockerfile` - Full build (builds Gatsby inside Docker); this is what CI publishes
-- `Dockerfile.simple` - Simple build (uses pre-built static files), for `deploy.sh`
+- `Dockerfile` - Builds the site and packages it with the server; this is what CI publishes
 - `docker-compose.yml` - The stack Portainer deploys; pulls the published image
 - `docker-compose.override.yml` - Local-only, restores `docker compose build`
+- `index.html` / `vite.config.js` / `prerender.mjs` - Static build and prerender
 - `server/index.js` - Static web server and contact relay
-- `deploy.sh` - Fallback manual deployment script
 - `.dockerignore` - Files to exclude from Docker build
 
 ## Performance Tips

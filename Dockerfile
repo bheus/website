@@ -1,27 +1,16 @@
-# Multi-stage build for Gatsby site optimized for Raspberry Pi (ARM architecture)
+# Multi-stage build for the static site, targeting arm64 (Raspberry Pi)
 
-# Stage 1: Build the Gatsby site
-FROM node:18-alpine AS builder
+# Stage 1: Build the static site
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
 COPY package*.json ./
 
-# Install dependencies (including devDependencies needed for build)
-RUN npm install && \
-    npm cache clean --force
+RUN npm ci && npm cache clean --force
 
-# Copy source files
 COPY . .
 
-# Disable Gatsby telemetry
-ENV GATSBY_TELEMETRY_DISABLED=1
-
-# Increase Node.js memory limit for build (important for Gatsby)
-ENV NODE_OPTIONS="--max-old-space-size=2048"
-
-# Build the Gatsby site
 RUN npm run build
 
 # Stage 2: Serve static files and relay contact messages

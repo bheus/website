@@ -4,14 +4,14 @@ Personal consulting site for Brendan Heussler, a software consultant based in Sa
 
 ## Local development
 
-The project uses Gatsby 4 and expects Node 18.
+The project uses Vite and React. The build needs Node 22 or newer; the production server runs Node 18.
 
 ```bash
 npm install
-npm run develop
+npm run dev
 ```
 
-Open `http://localhost:8000`.
+Open `http://localhost:5173`.
 
 ## Production build
 
@@ -19,7 +19,7 @@ Open `http://localhost:8000`.
 npm run build
 ```
 
-The generated static site is written to `public/`.
+The generated static site is written to `public/`. The build runs a client bundle, an SSR bundle, and `prerender.mjs`, which injects the rendered markup into `public/index.html` so the page is not a client-only shell.
 
 ## Docker
 
@@ -35,7 +35,11 @@ Start it locally:
 docker compose up -d
 ```
 
-The container serves the site on port 80. The repository's `deploy.sh` script builds and deploys the image to `apple-pi`.
+The container serves the site on port 80.
+
+## Deployment
+
+Pushing to `master` builds an arm64 image, publishes it to GHCR, and triggers the Portainer stack webhook on `apple-pi`. See `DEPLOYMENT.md`.
 
 ## Contact delivery
 
@@ -45,7 +49,8 @@ Copy `.env.example` to `.env` and provide the SMTP values before starting the co
 
 ## Primary files
 
-- `src/pages/index.jsx` — homepage structure and content
+- `index.html` — document shell, title, description, Open Graph, and icon links
+- `src/App.jsx` — homepage structure and content
 - `src/styles/site.css` — responsive visual system
 - `static/brendan-profile.webp` — optimized profile artwork
 - `server/index.js` — static server and protected contact relay
