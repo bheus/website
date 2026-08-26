@@ -20,7 +20,7 @@ Maintain the split between professional and personal projects:
 - **Abraham:** a trading algorithm that beats the S&P 500 in historical testing. Keep the historical-testing qualifier, do not call it private, and link its CTA to the contact section.
 - **GuiltySpark:** a log monitor/autonomous engineering tool that finds bugs and produces tested fixes.
 
-The exact approved destinations and current copy are documented in `AGENTS.md` and implemented in `src/pages/index.jsx`.
+The exact approved destinations and current copy are documented in `AGENTS.md` and implemented in `src/App.jsx`.
 
 ## Portrait
 
@@ -39,13 +39,16 @@ The exact approved destinations and current copy are documented in `AGENTS.md` a
 
 ## Technical Guardrails
 
-- Gatsby 4 frontend with custom React and CSS; do not restore the retired minimal-blog theme.
+- Vite frontend with custom React and CSS; do not restore Gatsby or the retired minimal-blog theme.
+- The build prerenders the page through `prerender.mjs`. Never let it degrade to a client-only shell.
+- Head metadata lives in `index.html` as plain tags. Do not reintroduce `react-helmet`.
 - Node 18 production server handles static files and the contact relay; do not assume nginx-only hosting.
-- Dockerized preview is on host port 80 and container port 8080. Gatsby development uses port 8000.
+- Dockerized preview is on host port 80 and container port 8080. The dev server uses port 5173.
 - Always use `docker compose`, never `docker-compose`.
 - Pushing to `master` autodeploys: CI publishes `ghcr.io/bheus/website:latest` and then triggers the Portainer `website` stack webhook on `apple-pi`.
 - `docker-compose.yml` is deployed by Portainer by itself. Keep it free of `build:` and give every variable an inline default. Local `docker compose build` comes from `docker-compose.override.yml`.
 - Do not deploy to `apple-pi` by hand unless Brendan explicitly requests it.
 - Validate material changes with `git diff --check`, a production build, desktop/mobile inspection, `/health`, and Lighthouse where appropriate.
+- Deployment is autodeploy only; there is no `deploy.sh` fallback.
 
 If this file and `AGENTS.md` ever disagree, follow `AGENTS.md` and update this summary to match.
