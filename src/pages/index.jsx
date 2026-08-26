@@ -403,7 +403,7 @@ export default function HomePage() {
         <a className="brand" href="#top"><span className="brand-mark">BH</span><span className="brand-name">Brendan Heussler</span></a>
         <p>Software consultant · San Diego, California</p>
         <div>
-          <a href="https://github.com/moose-byte" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="https://github.com/bheus" target="_blank" rel="noreferrer">GitHub</a>
           <a href="#contact">Contact</a>
           <span>© {new Date().getFullYear()}</span>
         </div>
