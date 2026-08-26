@@ -24,7 +24,8 @@ This is the canonical product, design, and implementation brief for agents worki
 - Use `static/brendan-profile.webp`, derived from Brendan's supplied illustrated portrait.
 - Treat it as a small profile/headshot accent in the About section, never as a hero image or full-height desktop image.
 - Keep the crop circular and explicitly square to prevent grid stretching.
-- Current intended sizes are 240×240px desktop, 200×200px tablet, and 180×180px mobile. The `--portrait-size` rules in `src/styles/site.css` are intentional.
+- Current intended sizes are 300×300px desktop, 230×230px tablet, and 180×180px mobile. The centered two-column composition and `--portrait-size` rules in `src/styles/site.css` are intentional.
+- On desktop, align the portrait near the heading rather than vertically centering it against the entire copy-and-values column.
 - Preserve `object-fit: cover` and the current face-centered crop unless a replacement portrait is supplied.
 
 ## Content Decisions
