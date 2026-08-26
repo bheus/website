@@ -26,7 +26,7 @@ The exact approved destinations and current copy are documented in `AGENTS.md` a
 
 - Use `static/brendan-profile.webp` only as a compact circular headshot in the About section.
 - Never make it a hero, full-height, or dominant desktop image.
-- Preserve explicit square dimensions: 240px desktop, 200px tablet, and 180px mobile. These prevent the CSS grid from stretching the face into a tall oval.
+- Preserve explicit square dimensions: 300px desktop, 230px tablet, and 180px mobile. Keep the combined portrait-and-copy block horizontally centered, with the desktop portrait aligned near the heading rather than the full copy column. These rules prevent the face from stretching into a tall oval or drifting toward the page edge.
 
 ## Privacy and Contact Form
 
