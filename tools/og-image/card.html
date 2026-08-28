@@ -1,0 +1,89 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>
+  :root{
+    --ink:#1d2a24; --clay:#c97852;
+    --serif:"Bitstream Charter",Charter,Georgia,serif;
+    --sans:"Liberation Sans",Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:1200px;height:630px}
+  body{
+    position:relative;overflow:hidden;
+    font-family:var(--sans);color:var(--ink);
+    background:linear-gradient(180deg,#f6f1e8 0%,#eee8da 62%,#ded0b6 100%);
+    -webkit-font-smoothing:antialiased;
+  }
+  /* hero::before — the faint drawn circle */
+  .ring{position:absolute;width:474px;height:474px;left:722px;top:60px;
+    border:1px solid rgba(84,104,83,.15);border-radius:50%}
+  .hills{position:absolute;left:0;width:100%}
+  .hills--back{bottom:0;height:236px;fill:#a7ae96}
+  .hills--front{bottom:-16px;height:170px;fill:#687c68}
+
+  .brand{position:absolute;z-index:6;top:54px;left:72px;
+    display:flex;align-items:center;gap:13px;
+    font-size:21px;font-weight:600;letter-spacing:-.02em}
+  .brand-mark{display:grid;place-items:center;width:42px;height:42px;
+    border:1px solid currentColor;border-radius:50%;
+    font-family:var(--serif);font-style:italic;font-weight:400;font-size:19px}
+
+  .frame{position:relative;z-index:5;display:flex;height:100%;
+    align-items:center;padding:24px 78px 0;gap:56px}
+  .col{flex:1;min-width:0}
+
+  .kicker{display:flex;align-items:center;gap:11px;margin-bottom:25px;
+    font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+  .dot{width:8px;height:8px;border-radius:50%;background:#5e8e5b;
+    box-shadow:0 0 0 5px rgba(94,142,91,.13)}
+
+  h1{font-size:73px;font-weight:500;line-height:.94;letter-spacing:-.055em}
+  h1 em{color:var(--clay);font-family:var(--serif);font-weight:400}
+
+  .lede{max-width:505px;margin-top:25px;font-size:19px;line-height:1.5;
+    letter-spacing:-.02em;color:#4a564e}
+
+  .location{display:flex;align-items:center;gap:9px;margin-top:32px;
+    font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+  .location svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.3}
+
+  /* mirrors .about-photo-wrap / .about-photo-bg / .photo-sun in src/styles/site.css */
+  .portrait{position:relative;flex:0 0 318px;width:318px;height:318px;margin-bottom:10px}
+  .portrait-bg{position:absolute;inset:7% -7% -7% 7%;background:#93a48d;
+    border-radius:50%;transform:rotate(3deg)}
+  .portrait img{position:relative;z-index:1;display:block;width:318px;height:318px;
+    object-fit:cover;object-position:center 32%;filter:saturate(.87);border-radius:50%}
+  .photo-sun{position:absolute;z-index:2;right:-26px;bottom:19px;width:87px;height:87px;
+    border-radius:50%;background:#a95637;transform:rotate(7deg)}
+  .photo-sun::before,.photo-sun::after{content:"";position:absolute;left:50%;top:50%;
+    background:rgba(255,255,255,.7);transform:translate(-50%,-50%)}
+  .photo-sun::before{width:36px;height:1px}
+  .photo-sun::after{width:1px;height:36px}
+
+</style></head><body>
+  <div class="ring"></div>
+  <svg class="hills hills--back" viewBox="0 0 1440 360" preserveAspectRatio="none">
+    <path d="M0 250c140-42 222-128 360-116 107 9 148 72 254 66 131-7 197-132 351-123 159 9 209 130 475 126v157H0Z"/>
+  </svg>
+  <svg class="hills hills--front" viewBox="0 0 1440 300" preserveAspectRatio="none">
+    <path d="M0 215c213 38 290-86 469-73 153 12 218 104 375 95 164-9 241-105 596-74v137H0Z"/>
+  </svg>
+
+  <div class="brand"><span class="brand-mark">BH</span><span>Brendan Heussler</span></div>
+
+  <div class="frame">
+    <div class="col">
+      <div class="kicker"><span class="dot"></span>Product engineering · Systems · Automation</div>
+      <h1>Serious software.<br><em>Easygoing process.</em></h1>
+      <p class="lede">Turning complicated systems into products that feel simple, fast, and dependable.</p>
+      <div class="location">
+        <svg viewBox="0 0 20 20"><path d="M10 18s6-5.1 6-10a6 6 0 1 0-12 0c0 4.9 6 10 6 10Z"/><circle cx="10" cy="8" r="2"/></svg>
+        San Diego, California
+      </div>
+    </div>
+    <div class="portrait">
+      <span class="portrait-bg"></span>
+      <img src="brendan-profile.webp" alt="">
+      <span class="photo-sun"></span>
+    </div>
+  </div>
+</body></html>
