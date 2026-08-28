@@ -120,9 +120,10 @@ carried by that document plus a few static files.
   behavior made explicit rather than a new decision. Naming `GPTBot`, `ClaudeBot`,
   `PerplexityBot`, or `CCBot` is Brendan's call, not a default to assume.
 
-Note that `og-image.jpg`, `llms.txt`, `robots.txt`, and `sitemap.xml` are all
-non-fingerprinted, so the Cloudflare cache override in **Known Issues** applies: purge
-the specific URL after changing any of them.
+`og-image.jpg`, `llms.txt`, `robots.txt`, and `sitemap.xml` are all non-fingerprinted,
+and three of them cannot be fingerprinted even in principle — see the Cloudflare entry in
+**Known Issues** for why, and for the zone setting that is the actual fix. While that
+setting is unconfirmed, purge the specific URL after changing any of them.
 
 ## Local Development and Validation
 
@@ -215,22 +216,47 @@ Cloudflare:  cache-control: public, max-age=31536000, immutable
 
 `server/index.js` is correct — it applies `immutable` only to files matching
 `\.[a-f0-9]{8,}\.(js|css)$`, so hashed bundles are immutable and `favicon.ico`,
-`apple-touch-icon.png`, `android-chrome-*`, `site.webmanifest`, `robots.txt`, and
-`sitemap.xml` are not. The override is a zone setting, so **do not "fix" this in
+`apple-touch-icon.png`, `android-chrome-*`, `favicon-16x16.png`, `favicon-32x32.png`,
+`site.webmanifest`, `brendan-profile.webp`, `og-image.jpg`, `robots.txt`, `llms.txt`,
+and `sitemap.xml` are not. The override is a zone setting, so **do not "fix" this in
 `server/index.js` — the change would have no effect.**
 
 Consequence: replacing any of those files leaves visitors on the old copy roughly
 forever. This already happened once, when a new `favicon.ico` sat behind a 13-hour-old
 edge entry and needed a manual purge.
 
-Fix, in the Cloudflare dashboard: set Browser Cache TTL to *Respect Existing Headers*,
-or add a Cache Rule scoped to those paths. Until then, purge the specific URL after
-changing any non-fingerprinted asset, and verify by comparing the origin and edge:
+**Chosen fix: the Cloudflare zone setting.** Brendan is applying it in the dashboard —
+Browser Cache TTL set to *Respect Existing Headers*, or a Cache Rule scoped to those
+paths. Verify it took effect by comparing origin and edge; the two hashes should match
+after a change, without a manual purge:
 
 ```bash
 ssh bheussler@apple-pi.lan "curl -s http://127.0.0.1:80/favicon.ico | sha256sum"
 curl -s https://builtbybrendan.com/favicon.ico | shasum -a 256
+curl -sI https://builtbybrendan.com/favicon.ico | grep -i cache-control
 ```
+
+That last line should report the origin's `max-age=300`, not `max-age=31536000`. Until
+it does, keep purging the specific URL after changing any file in the list above.
+
+**Fingerprinting is not the alternative here, and was considered and rejected.** It only
+works for files reached through a reference in a document that itself revalidates. Our
+HTML is `no-cache, must-revalidate`, so `og-image.jpg`, `site.webmanifest`, and the icon
+PNGs *could* be hashed — but `robots.txt` and `llms.txt` cannot be, ever: crawlers and
+agents fetch those at a fixed, well-known path, and a hashed name is a file nobody
+requests. `sitemap.xml` is hashable in principle and pointless in practice, because it is
+discovered through `robots.txt`, which is itself unhashable, and Search Console holds a
+registered URL. `favicon.ico` must also stay at the root, because browsers probe
+`/favicon.ico` directly whether or not a `<link>` points elsewhere. So fingerprinting
+would cover a strict subset of the problem while the zone setting covers all of it.
+
+If fingerprinting is ever revisited for the social card alone — unfurl caches at LinkedIn
+and Facebook are sticky in ways no origin header controls, so a fresh URL is the only
+reliable way to force a re-fetch — note two things: files in `static/` are copied verbatim
+by Vite's `publicDir` and are never hashed, so it needs a real step in `prerender.mjs`
+(hash, rename in `public/`, rewrite the references in the built HTML); and the immutable
+regex in `server/index.js` matches `js|css` only, so it would need widening or the hashed
+file still goes out with `max-age=300`.
 
 ### Two accessibility audits fail
 

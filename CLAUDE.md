@@ -56,6 +56,8 @@ The exact approved destinations and current copy are documented in `AGENTS.md` a
 `AGENTS.md` has a **Known Issues** section covering the Cloudflare cache override, two
 failing accessibility audits, and a mobile FCP regression. Read it before assuming a
 surprising measurement is new, and note that the cache issue is a Cloudflare zone
-setting — changing `server/index.js` will not fix it.
+setting — changing `server/index.js` will not fix it, and neither will fingerprinting
+the affected files. `robots.txt` and `llms.txt` are fetched at fixed well-known paths
+and can never be hashed; `favicon.ico` is probed at the root the same way.
 
 If this file and `AGENTS.md` ever disagree, follow `AGENTS.md` and update this summary to match.
