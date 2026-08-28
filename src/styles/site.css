@@ -122,8 +122,10 @@ h1, h2, h3, p { margin-top: 0; }
 .reveal--one { animation-delay: .08s; }.reveal--two { animation-delay: .16s; }.reveal--three { animation-delay: .26s; }.reveal--four { animation-delay: .36s; }
 @keyframes reveal { to { opacity: 1; transform: none; } }
 
-.intro-band { display: flex; align-items: center; justify-content: center; gap: 24px; min-height: 84px; padding: 20px 5vw; background: var(--forest); color: #eae6dc; font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
-.intro-band i { width: 4px; height: 4px; border-radius: 50%; background: var(--sand); }
+.intro-band { display: flex; align-items: center; justify-content: center; gap: 24px; min-height: 84px; margin: 0; padding: 20px 5vw; list-style: none; background: var(--forest); color: #eae6dc; font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+/* gap: inherit keeps the separator spacing in step with the band's own gap at every breakpoint. */
+.intro-band li { display: flex; align-items: center; gap: inherit; }
+.intro-band li + li::before { content: ""; width: 4px; height: 4px; border-radius: 50%; background: var(--sand); }
 
 .work-section { max-width: 1440px; margin: 0 auto; padding: 140px 5vw 160px; }
 .section-heading { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(270px, .6fr); align-items: end; gap: 80px; margin-bottom: 120px; }
@@ -134,8 +136,10 @@ h1, h2, h3, p { margin-top: 0; }
 .work-group + .work-group { margin-top: 125px; }
 .group-label { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; padding-bottom: 14px; border-bottom: 1px solid var(--line); font-size: 13px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; }
 .group-label span { color: #5f6b61; font-family: var(--serif); font-size: 16px; font-style: italic; font-weight: 400; }
-.project-grid { display: grid; grid-template-columns: 1.55fr 1fr; gap: 24px; }
+.project-grid { display: grid; grid-template-columns: 1.55fr 1fr; gap: 24px; margin: 0; padding: 0; list-style: none; }
 .project-grid--reverse { grid-template-columns: 1fr 1.55fr; }
+.project-item { display: flex; min-width: 0; }
+.project-item > .project-card { flex: 1 1 auto; }
 
 .project-card { display: flex; flex-direction: column; min-width: 0; padding: 12px; background: #ebe8dd; border: 1px solid transparent; transition: transform .35s cubic-bezier(.2,.7,.2,1), border-color .2s; }
 a.project-card:hover { transform: translateY(-6px); border-color: rgba(29,42,36,.22); }
@@ -206,8 +210,8 @@ a.project-card:hover .project-link svg { transform: translate(3px, -3px); }
 .about-copy h2 { margin-bottom: 35px; }
 .about-copy > p { max-width: 620px; color: #4c5a51; }
 .about-copy .about-lede { color: var(--ink); font-size: 21px; line-height: 1.55; letter-spacing: -.025em; }
-.about-values { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin-top: 55px; border-top: 1px solid rgba(29,42,36,.22); }
-.about-values > div { padding: 22px 20px 0 0; }.about-values > div + div { padding-left: 20px; border-left: 1px solid rgba(29,42,36,.22); }
+.about-values { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin: 55px 0 0; padding: 0; list-style: none; border-top: 1px solid rgba(29,42,36,.22); }
+.about-values > li { padding: 22px 20px 0 0; }.about-values > li + li { padding-left: 20px; border-left: 1px solid rgba(29,42,36,.22); }
 .about-values span { display: block; margin-bottom: 35px; color: #59655c; font-family: var(--serif); font-style: italic; }
 .about-values strong { display: block; margin-bottom: 8px; font-size: 14px; }
 .about-values p { margin: 0; color: #505c53; font-size: 12px; line-height: 1.5; }
@@ -262,7 +266,7 @@ footer > div { display: flex; align-items: center; gap: 22px; } footer > div a:h
   .about-section { grid-template-columns: 230px minmax(0, 1fr); gap: 55px; }
   .about-photo-wrap { --portrait-size: 230px; margin-top: 54px; }
   .about-values { grid-template-columns: 1fr; }
-  .about-values > div, .about-values > div + div { padding: 16px 0; border-left: 0; border-bottom: 1px solid rgba(29,42,36,.16); }
+  .about-values > li, .about-values > li + li { padding: 16px 0; border-left: 0; border-bottom: 1px solid rgba(29,42,36,.16); }
   .about-values span { display: inline-block; margin: 0 12px 0 0; }
   .contact-grid { grid-template-columns: 1fr; gap: 65px; }
   .contact-form { max-width: 620px; }

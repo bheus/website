@@ -107,18 +107,20 @@ const ProjectCard = ({ number, eyebrow, title, description, href, linkLabel, chi
     : {}
 
   return (
-    <Tag className={`project-card ${className}`} {...externalProps}>
-      <div className="project-card__top">
-        <span className="project-number">{number}</span>
-        <span className="project-eyebrow">{eyebrow}</span>
-      </div>
-      {children}
-      <div className="project-copy">
-        <h3>{title}</h3>
-        <p>{description}</p>
-        <span className="project-link">{linkLabel} <Arrow /></span>
-      </div>
-    </Tag>
+    <li className="project-item">
+      <Tag className={`project-card ${className}`} {...externalProps}>
+        <div className="project-card__top">
+          <span className="project-number">{number}</span>
+          <span className="project-eyebrow">{eyebrow}</span>
+        </div>
+        {children}
+        <div className="project-copy">
+          <h3>{title}</h3>
+          <p>{description}</p>
+          <span className="project-link">{linkLabel} <Arrow /></span>
+        </div>
+      </Tag>
+    </li>
   )
 }
 
@@ -203,6 +205,7 @@ const ContactForm = () => {
   return (
     <form
       className="contact-form"
+      aria-label="Contact Brendan"
       onSubmit={handleSubmit}
       onFocus={() => prepareChallenge().catch(() => {})}
       onPointerDown={() => prepareChallenge().catch(() => {})}
@@ -258,14 +261,14 @@ export default function App() {
       </header>
 
       <main id="top">
-        <section className="hero">
+        <section className="hero" aria-labelledby="hero-title">
           <Landscape />
           <div className="hero-inner">
             <div className="availability reveal reveal--one">
               <span className="availability-dot" />
               Product engineering · Systems · Automation
             </div>
-            <h1 className="reveal reveal--two">Serious software.<br /><em>Easygoing process.</em></h1>
+            <h1 id="hero-title" className="reveal reveal--two">Serious software.<br /><em>Easygoing process.</em></h1>
             <p className="hero-lede reveal reveal--three">
               I’m Brendan, a software consultant who turns complicated systems into products that feel simple, fast, and dependable.
             </p>
@@ -277,25 +280,25 @@ export default function App() {
           <div className="hero-location reveal reveal--four"><LocationMark /> San Diego, California</div>
         </section>
 
-        <section className="intro-band" aria-label="What I do">
-          <span>Product engineering</span><i />
-          <span>Scalable web platforms</span><i />
-          <span>AI &amp; automation</span><i />
-          <span>Technical strategy</span>
-        </section>
+        <ul className="intro-band" aria-label="What I do">
+          <li>Product engineering</li>
+          <li>Scalable web platforms</li>
+          <li>AI &amp; automation</li>
+          <li>Technical strategy</li>
+        </ul>
 
-        <section className="work-section" id="work">
+        <section className="work-section" id="work" aria-labelledby="work-title">
           <div className="section-heading">
             <div>
               <span className="section-kicker">Selected work</span>
-              <h2>Built for people.<br />Engineered to scale.</h2>
+              <h2 id="work-title">Built for people.<br />Engineered to scale.</h2>
             </div>
             <p>From high-traffic customer experiences to focused products, I care about the invisible details that make software hold up.</p>
           </div>
 
           <div className="work-group">
             <div className="group-label"><span>01</span> Professional work</div>
-            <div className="project-grid">
+            <ul className="project-grid">
               <ProjectCard
                 number="01"
                 eyebrow="Intuit · TurboTax"
@@ -318,12 +321,12 @@ export default function App() {
               >
                 <PickleballVisual />
               </ProjectCard>
-            </div>
+            </ul>
           </div>
 
           <div className="work-group work-group--personal">
             <div className="group-label"><span>02</span> Personal work</div>
-            <div className="project-grid project-grid--reverse">
+            <ul className="project-grid project-grid--reverse">
               <ProjectCard
                 number="03"
                 eyebrow="Abraham · Trading Algorithm"
@@ -347,11 +350,11 @@ export default function App() {
               >
                 <GuiltySparkVisual />
               </ProjectCard>
-            </div>
+            </ul>
           </div>
         </section>
 
-        <section className="about-section" id="about">
+        <section className="about-section" id="about" aria-labelledby="about-title">
           <div className="about-photo-wrap">
             <div className="about-photo-bg" />
             <img src="/brendan-profile.webp" width="900" height="900" alt="Illustrated portrait of Brendan Heussler" />
@@ -359,18 +362,18 @@ export default function App() {
           </div>
           <div className="about-copy">
             <span className="section-kicker">A little about me</span>
-            <h2>Calm thinking for complicated builds.</h2>
+            <h2 id="about-title">Calm thinking for complicated builds.</h2>
             <p className="about-lede">I’m a full-stack engineer and consultant based in San Diego, California.</p>
             <p>I’ve spent my career building software people depend on—from customer experiences at Intuit to lean, ambitious products. I’m at my best when the problem is messy, the stakes are real, and the path forward needs equal parts technical depth and common sense.</p>
-            <div className="about-values">
-              <div><span>01</span><strong>Clear over clever</strong><p>Simple systems are easier to ship, run, and trust.</p></div>
-              <div><span>02</span><strong>Steady under pressure</strong><p>No drama. Just thoughtful decisions and consistent progress.</p></div>
-              <div><span>03</span><strong>Built to last</strong><p>Good architecture should create options, not obligations.</p></div>
-            </div>
+            <ul className="about-values">
+              <li><span>01</span><strong>Clear over clever</strong><p>Simple systems are easier to ship, run, and trust.</p></li>
+              <li><span>02</span><strong>Steady under pressure</strong><p>No drama. Just thoughtful decisions and consistent progress.</p></li>
+              <li><span>03</span><strong>Built to last</strong><p>Good architecture should create options, not obligations.</p></li>
+            </ul>
           </div>
         </section>
 
-        <section className="contact-section" id="contact">
+        <section className="contact-section" id="contact" aria-labelledby="contact-title">
           <div className="contact-landscape" aria-hidden="true">
             <span className="contact-sun" />
             <span className="contact-hill contact-hill--one" />
@@ -379,7 +382,7 @@ export default function App() {
           <div className="contact-grid">
             <div className="contact-copy">
               <span className="section-kicker">Contact me</span>
-              <h2>Let’s make something<br /><em>solid and useful.</em></h2>
+              <h2 id="contact-title">Let’s make something<br /><em>solid and useful.</em></h2>
               <p>Tell me a little about the project, the knot you’re trying to untangle, or the idea you can’t quite leave alone.</p>
               <span className="contact-location"><LocationMark /> San Diego · Working with good people everywhere</span>
             </div>

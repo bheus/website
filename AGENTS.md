@@ -83,9 +83,46 @@ Keep the prose confident but plainspoken. The work itself should establish credi
 - `src/styles/site.css` — responsive layout and visual system
 - `static/brendan-profile.webp` — optimized portrait
 - `server/index.js` — static server, cache/security headers, anti-bot validation, and SMTP relay
+- `static/llms.txt` — plain-language summary of the practice and the four projects, for LLM agents
+- `static/og-image.jpg` — 1200x630 social card; regenerate with `tools/og-image/render.sh`
 - `.env.example` — server-only contact configuration template
 - `docker-compose.yml` — local/production container configuration
 - `DEPLOYMENT.md` — Raspberry Pi deployment instructions
+
+### Machine-readable surface
+
+The page is a single HTML document, so everything an agent or crawler needs has to be
+carried by that document plus a few static files.
+
+- **Structured data:** one `application/ld+json` `@graph` in `index.html` — `WebSite`,
+  `Person`, `ProfessionalService`, and one node per featured project. The
+  `ProfessionalService` `contactPoint` carries the `#contact` URL and no address;
+  keep it that way, since the email must never reach the client.
+- **`static/llms.txt`:** the `llms.txt` convention (note the plural filename). It repeats
+  the site's positioning and project descriptions as plain Markdown so an agent does not
+  have to infer them from layout. It states Abraham's historical-testing qualifier
+  explicitly. Keep it in step with the copy in `src/App.jsx`.
+- **Social cards:** full Open Graph and Twitter tag sets in `index.html`, pointing at
+  `og-image.jpg` by absolute URL. JPEG rather than WebP because several unfurlers still
+  fail to decode WebP. `tools/og-image/card.html` mirrors the hero and About visual
+  system; if that system changes, re-render the card.
+- **Landmarks and lists:** each `section` is named via `aria-labelledby` against its own
+  heading, so it is exposed as a region rather than a generic container. The disciplines
+  band, both project grids, and the About values are real `ul`/`li` lists. The separator
+  dots in the band come from `.intro-band li + li::before`, and `gap: inherit` keeps that
+  spacing in step with the band's own gap at every breakpoint.
+- **Unknown paths return 404.** `serveStatic` still serves the prerendered page for an
+  extensionless miss so a visitor on a stale link can navigate, but the status is 404, not
+  200. Before this, every wrong URL answered 200 with the homepage and no crawler could
+  tell a real route from a typo. If real routes are ever added, that fallback needs
+  revisiting.
+- **`robots.txt` allows everything,** including AI crawlers, which is the pre-existing
+  behavior made explicit rather than a new decision. Naming `GPTBot`, `ClaudeBot`,
+  `PerplexityBot`, or `CCBot` is Brendan's call, not a default to assume.
+
+Note that `og-image.jpg`, `llms.txt`, `robots.txt`, and `sitemap.xml` are all
+non-fingerprinted, so the Cloudflare cache override in **Known Issues** applies: purge
+the specific URL after changing any of them.
 
 ## Local Development and Validation
 

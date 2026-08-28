@@ -1,0 +1,24 @@
+# Brendan Heussler
+
+> Independent software consultant in San Diego, California. Full-stack engineer who
+> turns complicated systems into products that feel simple, fast, and dependable.
+
+Available for product engineering, scalable web platforms, AI and automation, and
+technical strategy. Work spans high-traffic customer experiences at Intuit through to
+focused independent products. Enquiries go through the contact form on the site; there
+is no published email address or phone number.
+
+## Professional work
+
+- [TurboTax local stores and experts](https://turbotax.intuit.com/local-tax-offices/ny/new-york/d51a4afe6691489aa78ee8793a6bc278/): Scalable local discovery and profile infrastructure for hundreds of TurboTax stores and thousands of expert pages, connecting customers with trusted tax help nearby. The link is one representative live location.
+- [Certified Pickleball Player](https://www.certifiedpickleballplayer.com/): A player platform combining verified credentials, personalized gear, community discovery, and AI-powered match analysis.
+
+## Personal work
+
+- [Abraham](https://builtbybrendan.com/#contact): A trading algorithm that beats the S&P 500 in historical testing, backed by reproducible research and disciplined risk controls. The historical-testing qualifier is load-bearing: this is a backtested result, not a claim about live or future returns. There is no public product page — enquiries go through the contact form.
+- [GuiltySpark](https://guiltyspark.builtbybrendan.com/): A log monitor and autonomous engineering tool that watches production logs, finds bugs in context, and turns incidents into tested fixes.
+
+## Contact
+
+- [Contact form](https://builtbybrendan.com/#contact): The only contact channel. Submissions are relayed server-side; the destination address is not published on the site.
+- [GitHub](https://github.com/bheus): Public code.
