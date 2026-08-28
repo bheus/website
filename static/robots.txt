@@ -1,3 +1,4 @@
 User-agent: *
+Allow: /
 
-sitemap: https://builtbybrendan.com/sitemap.xml
+Sitemap: https://builtbybrendan.com/sitemap.xml

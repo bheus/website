@@ -29,6 +29,7 @@ const mimeTypes = {
   ".js": "text/javascript; charset=utf-8",
   ".json": "application/json; charset=utf-8",
   ".map": "application/json; charset=utf-8",
+  ".md": "text/markdown; charset=utf-8",
   ".png": "image/png",
   ".svg": "image/svg+xml",
   ".txt": "text/plain; charset=utf-8",
@@ -257,12 +258,17 @@ const serveStatic = async (req, res, pathname) => {
   }
 
   let stat
+  let missing = false
   try {
     stat = await fs.stat(filePath)
   } catch {
+    // This is a single-page site, so an unknown path is genuinely absent. Serve the page
+    // anyway — a visitor landing on a stale link can still navigate — but answer 404 rather
+    // than 200, so crawlers and agents can tell a real route from a typo.
     if (!path.extname(relativePath)) {
       filePath = path.join(ROOT, "index.html")
       stat = await fs.stat(filePath).catch(() => null)
+      missing = true
     }
   }
 
@@ -288,7 +294,7 @@ const serveStatic = async (req, res, pathname) => {
   }
   if (useGzip) headers["Content-Encoding"] = "gzip"
 
-  res.writeHead(200, headers)
+  res.writeHead(missing ? 404 : 200, headers)
   if (req.method === "HEAD") {
     res.end()
     return
