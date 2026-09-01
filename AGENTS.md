@@ -72,7 +72,7 @@ Keep the prose confident but plainspoken. The work itself should establish credi
 - **Prerendering:** `prerender.mjs` renders `src/App.jsx` to markup and injects it into `public/index.html`. The page must not ship as a client-only shell — crawlers and social unfurlers would receive an empty root element.
 - **Head metadata:** plain tags in `index.html`. `react-helmet` was removed; it never worked here, because `gatsby-plugin-react-helmet` was not installed and the head block never reached the static HTML.
 - **Styling:** Custom CSS in `src/styles/site.css`; the old `@lekoarts/gatsby-theme-minimal-blog` UI is no longer used.
-- **Production runtime:** Node 18 serves the generated site and implements the protected contact relay. Production is no longer nginx-only.
+- **Production runtime:** Node 24 (LTS) serves the generated site and implements the protected contact relay. Production is no longer nginx-only.
 - **Containerization:** Docker / Docker Compose.
 - **Deployment target:** Raspberry Pi.
 
@@ -128,10 +128,10 @@ place, so replacing one of them propagates in about five minutes with no manual 
 
 ## Local Development and Validation
 
-The build needs Node 22 or newer (Vite's floor). The production server still runs Node 18,
-which is why `server/package.json` pins `resend` to an exact `6.4.2`: 6.5.0 raised the SDK's
-floor to Node 20, and a caret range would quietly resolve past it on the next rebuild.
-Moving off Node 18 in the `Dockerfile` is Brendan's call, not an incidental upgrade.
+Both `Dockerfile` stages run Node 24, the active LTS line (Krypton). Node 26 exists but is
+still Current; it becomes LTS in October 2026, which is the moment to reconsider the pin.
+Node 24 clears Vite's floor for the build and the `resend` SDK's `>=20` floor for the
+runtime, so `server/package.json` can track `^6.25.0` rather than an exact version.
 
 ```bash
 npm install

@@ -1,7 +1,7 @@
 # Multi-stage build for the static site, targeting arm64 (Raspberry Pi)
 
 # Stage 1: Build the static site
-FROM node:22-alpine AS builder
+FROM node:24-alpine AS builder
 
 WORKDIR /app
 
@@ -14,7 +14,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Serve static files and relay contact messages
-FROM node:18-alpine
+FROM node:24-alpine
 
 WORKDIR /app
 

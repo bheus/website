@@ -4,7 +4,7 @@ Personal consulting site for Brendan Heussler, a software consultant based in Sa
 
 ## Local development
 
-The project uses Vite and React. The build needs Node 22 or newer; the production server runs Node 18.
+The project uses Vite and React. Both build and production server run Node 24 (active LTS).
 
 ```bash
 npm install
