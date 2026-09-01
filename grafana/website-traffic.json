@@ -26,18 +26,51 @@
     "to": "now"
   },
   "editable": true,
+  "templating": {
+    "list": [
+      {
+        "name": "monitoring",
+        "label": "Monitoring traffic",
+        "type": "custom",
+        "description": "Uptime Kuma and Docker's internal healthcheck together outnumber real traffic.",
+        "query": "Hidden : | ua !~ `Uptime-Kuma.*|Wget`,Shown : | ua =~ `.*`",
+        "options": [
+          {
+            "selected": true,
+            "text": "Hidden",
+            "value": "| ua !~ `Uptime-Kuma.*|Wget`"
+          },
+          {
+            "selected": false,
+            "text": "Shown",
+            "value": "| ua =~ `.*`"
+          }
+        ],
+        "current": {
+          "selected": true,
+          "text": "Hidden",
+          "value": "| ua !~ `Uptime-Kuma.*|Wget`"
+        },
+        "multi": false,
+        "includeAll": false,
+        "skipUrlSync": false,
+        "hide": 0
+      }
+    ]
+  },
   "panels": [
     {
+      "description": "Respects the Monitoring traffic toggle.",
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | __error__=\"\" [$__range]))",
-          "legendFormat": "Total requests",
-          "queryType": "instant",
+          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | __error__=\"\" ${monitoring:raw} [$__range]))",
+          "legendFormat": "Requests",
           "datasource": {
             "type": "loki",
             "uid": "${DS_LOKI}"
-          }
+          },
+          "queryType": "instant"
         }
       ],
       "options": {
@@ -63,7 +96,7 @@
         "overrides": []
       },
       "id": 1,
-      "title": "Total requests",
+      "title": "Requests",
       "type": "stat",
       "gridPos": {
         "x": 0,
@@ -77,16 +110,17 @@
       }
     },
     {
+      "description": "Fetches of the fingerprinted JS bundle \u2014 only a real browser requests it.",
       "targets": [
         {
           "refId": "A",
           "expr": "sum(count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | path =~ `/assets/.*\\.js` [$__range]))",
           "legendFormat": "Browser page loads",
-          "queryType": "instant",
           "datasource": {
             "type": "loki",
             "uid": "${DS_LOKI}"
-          }
+          },
+          "queryType": "instant"
         }
       ],
       "options": {
@@ -126,16 +160,17 @@
       }
     },
     {
+      "description": "Uptime Kuma plus Docker's internal healthcheck. Always shown, so you can see what the toggle hides.",
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | ua =~ \"Uptime-Kuma.*\" [$__range]))",
-          "legendFormat": "Uptime Kuma checks",
-          "queryType": "instant",
+          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | ua =~ `Uptime-Kuma.*|Wget` [$__range]))",
+          "legendFormat": "Monitoring checks",
           "datasource": {
             "type": "loki",
             "uid": "${DS_LOKI}"
-          }
+          },
+          "queryType": "instant"
         }
       ],
       "options": {
@@ -161,7 +196,7 @@
         "overrides": []
       },
       "id": 3,
-      "title": "Uptime Kuma checks",
+      "title": "Monitoring checks",
       "type": "stat",
       "gridPos": {
         "x": 12,
@@ -175,16 +210,17 @@
       }
     },
     {
+      "description": "Respects the Monitoring traffic toggle.",
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | status >= 400 [$__range]))",
+          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | __error__=\"\" ${monitoring:raw} | status >= 400 [$__range]))",
           "legendFormat": "Errors (4xx/5xx)",
-          "queryType": "instant",
           "datasource": {
             "type": "loki",
             "uid": "${DS_LOKI}"
-          }
+          },
+          "queryType": "instant"
         }
       ],
       "options": {
@@ -227,43 +263,43 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | ua =~ \"Uptime-Kuma.*\" [$__auto]))",
-          "legendFormat": "Uptime Kuma",
-          "queryType": "range",
+          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | ua =~ `Uptime-Kuma.*|Wget` [$__auto]))",
+          "legendFormat": "Monitoring",
           "datasource": {
             "type": "loki",
             "uid": "${DS_LOKI}"
-          }
+          },
+          "queryType": "range"
         },
         {
           "refId": "B",
-          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | ua !~ \"Uptime-Kuma.*\" | ua =~ \"(?i).*(bot|crawler|spider|claudebot|gptbot|perplexity|ccbot|semrush|ahrefs|bingbot|googlebot).*\" [$__auto]))",
+          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | __error__=\"\" ${monitoring:raw} | ua =~ `(?i).*(bot|crawler|spider|claudebot|gptbot|perplexity|ccbot|semrush|ahrefs|bingbot|googlebot).*` [$__auto]))",
           "legendFormat": "Crawlers",
-          "queryType": "range",
           "datasource": {
             "type": "loki",
             "uid": "${DS_LOKI}"
-          }
+          },
+          "queryType": "range"
         },
         {
           "refId": "C",
-          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | ua !~ \"Uptime-Kuma.*\" | status >= 400 [$__auto]))",
+          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | __error__=\"\" ${monitoring:raw} | status >= 400 [$__auto]))",
           "legendFormat": "Scanners (4xx/5xx)",
-          "queryType": "range",
           "datasource": {
             "type": "loki",
             "uid": "${DS_LOKI}"
-          }
+          },
+          "queryType": "range"
         },
         {
           "refId": "D",
           "expr": "sum(count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | path =~ `/assets/.*\\.js` [$__auto]))",
           "legendFormat": "Browser page loads",
-          "queryType": "range",
           "datasource": {
             "type": "loki",
             "uid": "${DS_LOKI}"
-          }
+          },
+          "queryType": "range"
         }
       ],
       "fieldConfig": {
@@ -271,11 +307,11 @@
           "custom": {
             "drawStyle": "line",
             "fillOpacity": 18,
+            "lineWidth": 1,
+            "showPoints": "never",
             "stacking": {
               "mode": "normal"
-            },
-            "lineWidth": 1,
-            "showPoints": "never"
+            }
           }
         },
         "overrides": []
@@ -309,13 +345,13 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum by (status) (count_over_time({container=\"brendan-website\"} | json | __error__=\"\" [$__auto]))",
+          "expr": "sum by (status) (count_over_time({container=\"brendan-website\"} | json | __error__=\"\" ${monitoring:raw} [$__auto]))",
           "legendFormat": "{{status}}",
-          "queryType": "range",
           "datasource": {
             "type": "loki",
             "uid": "${DS_LOKI}"
-          }
+          },
+          "queryType": "range"
         }
       ],
       "fieldConfig": {
@@ -358,13 +394,13 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "topk(25, sum by (path) (count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | ua !~ \"Uptime-Kuma.*\" [$__range])))",
+          "expr": "topk(25, sum by (path) (count_over_time({container=\"brendan-website\"} | json | __error__=\"\" ${monitoring:raw} [$__range])))",
           "legendFormat": "{{path}}",
-          "queryType": "instant",
           "datasource": {
             "type": "loki",
             "uid": "${DS_LOKI}"
-          }
+          },
+          "queryType": "instant"
         }
       ],
       "options": {
@@ -395,7 +431,7 @@
         "overrides": []
       },
       "id": 7,
-      "title": "Top paths (excluding Kuma)",
+      "title": "Top paths",
       "type": "table",
       "gridPos": {
         "x": 0,
@@ -412,13 +448,13 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "topk(25, sum by (ua) (count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | ua !~ \"Uptime-Kuma.*\" | ua != \"\" [$__range])))",
+          "expr": "topk(25, sum by (ua) (count_over_time({container=\"brendan-website\"} | json | __error__=\"\" ${monitoring:raw} | ua != `` [$__range])))",
           "legendFormat": "{{ua}}",
-          "queryType": "instant",
           "datasource": {
             "type": "loki",
             "uid": "${DS_LOKI}"
-          }
+          },
+          "queryType": "instant"
         }
       ],
       "options": {
@@ -449,7 +485,7 @@
         "overrides": []
       },
       "id": 8,
-      "title": "Top user agents (excluding Kuma)",
+      "title": "Top user agents",
       "type": "table",
       "gridPos": {
         "x": 12,
@@ -466,13 +502,13 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "topk(25, sum by (ip) (count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | ua !~ \"Uptime-Kuma.*\" [$__range])))",
+          "expr": "topk(25, sum by (ip) (count_over_time({container=\"brendan-website\"} | json | __error__=\"\" ${monitoring:raw} [$__range])))",
           "legendFormat": "{{ip}}",
-          "queryType": "instant",
           "datasource": {
             "type": "loki",
             "uid": "${DS_LOKI}"
-          }
+          },
+          "queryType": "instant"
         }
       ],
       "options": {
@@ -503,7 +539,7 @@
         "overrides": []
       },
       "id": 9,
-      "title": "Top source IPs (excluding Kuma)",
+      "title": "Top source IPs",
       "type": "table",
       "gridPos": {
         "x": 0,
@@ -520,13 +556,13 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum by (country) (count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | ua !~ \"Uptime-Kuma.*\" | country != \"\" [$__range]))",
+          "expr": "sum by (country) (count_over_time({container=\"brendan-website\"} | json | __error__=\"\" ${monitoring:raw} | country != `` [$__range]))",
           "legendFormat": "{{country}}",
-          "queryType": "instant",
           "datasource": {
             "type": "loki",
             "uid": "${DS_LOKI}"
-          }
+          },
+          "queryType": "instant"
         }
       ],
       "options": {
@@ -574,13 +610,13 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "topk(20, sum by (ua) (count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | ua =~ \"(?i).*(bot|crawler|spider|claudebot|gptbot|perplexity|ccbot|semrush|ahrefs|bingbot|googlebot).*\" [$__range])))",
+          "expr": "topk(20, sum by (ua) (count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | ua =~ `(?i).*(bot|crawler|spider|claudebot|gptbot|perplexity|ccbot|semrush|ahrefs|bingbot|googlebot).*` [$__range])))",
           "legendFormat": "{{ua}}",
-          "queryType": "instant",
           "datasource": {
             "type": "loki",
             "uid": "${DS_LOKI}"
-          }
+          },
+          "queryType": "instant"
         }
       ],
       "options": {
@@ -628,13 +664,13 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "{container=\"brendan-website\"} | json | __error__=\"\" | ua !~ \"Uptime-Kuma.*\"",
+          "expr": "{container=\"brendan-website\"} | json | __error__=\"\" ${monitoring:raw}",
           "legendFormat": "",
-          "queryType": "range",
           "datasource": {
             "type": "loki",
             "uid": "${DS_LOKI}"
-          }
+          },
+          "queryType": "range"
         }
       ],
       "options": {
@@ -644,7 +680,7 @@
         "enableLogDetails": true
       },
       "id": 12,
-      "title": "Live requests (excluding Kuma)",
+      "title": "Live requests",
       "type": "logs",
       "gridPos": {
         "x": 0,
