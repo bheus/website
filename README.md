@@ -43,9 +43,9 @@ Pushing to `master` builds an arm64 image, publishes it to GHCR, and triggers th
 
 ## Contact delivery
 
-The contact form posts to a same-origin server endpoint. The destination address and SMTP credentials exist only in the container environment; no email address is included in the browser bundle.
+The contact form posts to a same-origin server endpoint, which relays the message through Resend. The destination address and API key exist only in the container environment; no email address is included in the browser bundle.
 
-Copy `.env.example` to `.env` and provide the SMTP values before starting the container. The contact endpoint combines a JavaScript proof-of-work challenge with a honeypot, minimum completion time, origin validation, content checks, and IP-based rate limiting. These controls reduce automated submissions without adding a visible CAPTCHA.
+Copy `.env.example` to `.env` and provide `RESEND_API_KEY`, `CONTACT_TO`, and `CONTACT_FROM` before starting the container. The contact endpoint combines a JavaScript proof-of-work challenge with a honeypot, minimum completion time, origin validation, content checks, and IP-based rate limiting. These controls reduce automated submissions without adding a visible CAPTCHA.
 
 ## Primary files
 

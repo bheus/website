@@ -59,9 +59,10 @@ Keep the prose confident but plainspoken. The work itself should establish credi
 - Never put Brendan's email address in client HTML, JavaScript, metadata, a `mailto:` URL, or other browser-delivered assets.
 - The form posts to the same-origin `/api/contact` endpoint in `server/index.js`. Destination and sender addresses exist only in server environment variables.
 - Preserve the current anti-bot layers: one-time challenge, client-side SHA-256 proof of work, minimum completion time, honeypot, same-origin validation, content checks, and per-IP rate limiting.
-- Do not replace failed delivery with a fake success response. A submission is successful only after the SMTP relay accepts it.
-- SMTP configuration belongs in an uncommitted `.env`, using `.env.example` as the template. Never commit, print, or expose real credentials.
-- Without SMTP variables, a valid local submission intentionally returns HTTP 503 with "Contact delivery is temporarily unavailable."
+- Delivery goes through Resend's Node SDK. The SDK reports API failures in the returned `error` rather than throwing, so the send path checks it explicitly; an unchecked call would answer 200 for a message that was never sent.
+- Do not replace failed delivery with a fake success response. A submission is successful only after Resend accepts it.
+- Contact configuration belongs in an uncommitted `.env`, using `.env.example` as the template. Never commit, print, or expose real credentials.
+- The required variables are `RESEND_API_KEY`, `CONTACT_TO`, and `CONTACT_FROM`. `CONTACT_FROM` has no fallback, because Resend only accepts a sender on a domain verified in the account. Without all three, a valid local submission intentionally returns HTTP 503 with "Contact delivery is temporarily unavailable."
 - At the time these notes were written, neither this checkout nor `/home/bheussler/website` on `apple-pi` had a real `.env`; contact delivery still requires configuration.
 - HTML responses use `no-cache, max-age=0, must-revalidate` so redesigns do not remain hidden behind stale HTML. Fingerprinted JS and CSS remain immutable.
 
@@ -82,7 +83,7 @@ Keep the prose confident but plainspoken. The work itself should establish credi
 - `vite.config.js` / `prerender.mjs` — build configuration and the static prerender pass
 - `src/styles/site.css` — responsive layout and visual system
 - `static/brendan-profile.webp` — optimized portrait
-- `server/index.js` — static server, cache/security headers, anti-bot validation, and SMTP relay
+- `server/index.js` — static server, cache/security headers, anti-bot validation, and Resend relay
 - `static/llms.txt` — plain-language summary of the practice and the four projects, for LLM agents
 - `static/og-image.jpg` — 1200x630 social card; regenerate with `tools/og-image/render.sh`
 - `.env.example` — server-only contact configuration template
@@ -127,7 +128,10 @@ place, so replacing one of them propagates in about five minutes with no manual 
 
 ## Local Development and Validation
 
-The build needs Node 22 or newer (Vite's floor). The production server still runs Node 18.
+The build needs Node 22 or newer (Vite's floor). The production server still runs Node 18,
+which is why `server/package.json` pins `resend` to an exact `6.4.2`: 6.5.0 raised the SDK's
+floor to Node 20, and a caret range would quietly resolve past it on the next rebuild.
+Moving off Node 18 in the `Dockerfile` is Brendan's call, not an incidental upgrade.
 
 ```bash
 npm install
@@ -201,7 +205,7 @@ When updating scripts or documentation, preserve this command in `DEPLOYMENT.md`
 - Public host port: 80
 - Container port: 8080
 - Orchestrated by the Portainer stack named `website` at <http://apple-pi.lan:9000>.
-- Keep contact/SMTP values in the Portainer stack's environment variables, outside the Docker image and Git repository. An optional `.env` beside the compose file is still honored.
+- Keep the contact and Resend values in the Portainer stack's environment variables, outside the Docker image and Git repository. An optional `.env` beside the compose file is still honored.
 
 ### Autodeploy
 
@@ -219,9 +223,9 @@ not the `apple-pi.lan:9000` URL Portainer's UI displays — GitHub's runners can
 resolve `apple-pi.lan`. Cloudflare exposes only that one path and 404s everything
 else on the host, so the rest of the Portainer API stays unreachable.
 
-Stack environment variables (contact/SMTP) reach the container only on redeploy;
-saving them in Portainer alone changes nothing. Delivery uses Resend, whose API
-key is shared with the `guiltyspark` stack — rotating it means updating both.
+Contact environment variables reach the container only on redeploy; saving them in
+Portainer alone changes nothing. Delivery uses Resend, whose API key is shared with
+the `guiltyspark` stack — rotating it means updating both.
 
 `docker-compose.yml` is the file Portainer deploys, so it must stand alone — no
 `build:` section, and every variable needs an inline default, because Portainer

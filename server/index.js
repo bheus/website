@@ -4,7 +4,7 @@ import http from "node:http"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { createGzip } from "node:zlib"
-import nodemailer from "nodemailer"
+import { Resend } from "resend"
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../public")
 const PORT = Number.parseInt(process.env.PORT || "8080", 10)
@@ -170,31 +170,17 @@ const validateSubmission = body => {
   return { fields }
 }
 
-const smtpConfigured = () => [
+// CONTACT_FROM has no fallback: Resend only accepts a sender on a verified domain.
+const contactConfigured = () => [
+  process.env.RESEND_API_KEY,
   process.env.CONTACT_TO,
-  process.env.SMTP_HOST,
-  process.env.SMTP_USER,
-  process.env.SMTP_PASS,
+  process.env.CONTACT_FROM,
 ].every(Boolean)
 
-let transporter
-const getTransporter = () => {
-  if (!transporter) {
-    transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number.parseInt(process.env.SMTP_PORT || "587", 10),
-      secure: process.env.SMTP_SECURE === "true",
-      requireTLS: process.env.SMTP_REQUIRE_TLS !== "false",
-      disableFileAccess: true,
-      disableUrlAccess: true,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-      tls: { minVersion: "TLSv1.2" },
-    })
-  }
-  return transporter
+let resend
+const getResend = () => {
+  if (!resend) resend = new Resend(process.env.RESEND_API_KEY)
+  return resend
 }
 
 const handleChallenge = (req, res) => {
@@ -251,7 +237,7 @@ const handleContact = async (req, res) => {
     return
   }
 
-  if (!smtpConfigured()) {
+  if (!contactConfigured()) {
     sendJson(res, 503, { message: "Contact delivery is temporarily unavailable." })
     return
   }
@@ -260,17 +246,20 @@ const handleContact = async (req, res) => {
   const subjectPrefix = cleanLine(process.env.CONTACT_SUBJECT_PREFIX || "Website inquiry", 80)
 
   try {
-    await getTransporter().sendMail({
-      from: process.env.CONTACT_FROM || process.env.SMTP_USER,
+    // Resend reports API failures in `error` instead of throwing, so an unchecked call
+    // would answer 200 for a message that was never sent.
+    const { error } = await getResend().emails.send({
+      from: process.env.CONTACT_FROM,
       to: process.env.CONTACT_TO,
       replyTo: email,
       subject: `${subjectPrefix}: ${name}`,
       text: `Name: ${name}\nEmail: ${email}\nCompany: ${company || "—"}\n\n${message}`,
       html: `<p><strong>Name:</strong> ${escapeHtml(name)}<br><strong>Email:</strong> ${escapeHtml(email)}<br><strong>Company:</strong> ${escapeHtml(company || "—")}</p><p>${escapeHtml(message).replace(/\n/g, "<br>")}</p>`,
     })
+    if (error) throw error
     sendJson(res, 200, { ok: true })
   } catch (error) {
-    console.error("Contact delivery failed:", error?.code || error?.name || "unknown error")
+    console.error("Contact delivery failed:", error?.name || error?.statusCode || error?.code || "unknown error")
     sendJson(res, 502, { message: "The message could not be delivered. Please try again later." })
   }
 }

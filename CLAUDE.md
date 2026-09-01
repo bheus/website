@@ -31,18 +31,18 @@ The exact approved destinations and current copy are documented in `AGENTS.md` a
 ## Privacy and Contact Form
 
 - Never expose Brendan's email in HTML, JavaScript, metadata, `mailto:` links, screenshots, logs, or committed files.
-- Keep contact delivery server-side through `/api/contact` and SMTP environment variables.
+- Keep contact delivery server-side through `/api/contact` and the Resend environment variables (`RESEND_API_KEY`, `CONTACT_TO`, `CONTACT_FROM`).
 - Preserve the proof-of-work challenge, honeypot, timing check, origin validation, content validation, and rate limits.
-- Never fake a successful send when SMTP is unavailable.
+- Never fake a successful send when delivery is unavailable. Resend returns failures in `error` instead of throwing; treat that as a 502.
 - Real values belong only in an ignored `.env`; use `.env.example` as a template.
-- Missing SMTP configuration currently produces the intentional "Contact delivery is temporarily unavailable" response. Configure the environment rather than bypassing it.
+- Missing contact configuration currently produces the intentional "Contact delivery is temporarily unavailable" response. Configure the environment rather than bypassing it.
 
 ## Technical Guardrails
 
 - Vite frontend with custom React and CSS; do not restore Gatsby or the retired minimal-blog theme.
 - The build prerenders the page through `prerender.mjs`. Never let it degrade to a client-only shell.
 - Head metadata lives in `index.html` as plain tags. Do not reintroduce `react-helmet`.
-- Node 18 production server handles static files and the contact relay; do not assume nginx-only hosting.
+- Node 18 production server handles static files and the contact relay; do not assume nginx-only hosting. `resend` is pinned to `6.4.2` because 6.5.0 requires Node 20.
 - Dockerized preview is on host port 80 and container port 8080. The dev server uses port 5173.
 - Always use `docker compose`, never `docker-compose`.
 - Pushing to `master` autodeploys: CI publishes `ghcr.io/bheus/website:latest` and then triggers the Portainer `website` stack webhook on `apple-pi`.

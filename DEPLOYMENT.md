@@ -50,7 +50,7 @@ redeploys onto a stale image.
    stack at <http://apple-pi.lan:9000> → Stacks → Add stack:
    - Name: `website`
    - Build method: **Web editor**, pasting this repository's `docker-compose.yml`
-   - Environment variables: the contact/SMTP values from `.env.example`
+   - Environment variables: the contact values from `.env.example`
    - Enable **GitOps updates** → **Webhook**, with **re-pull image** enabled
    - Copy the generated webhook UUID
 
@@ -88,14 +88,13 @@ redeploys onto a stale image.
 Contact settings live in the Portainer stack's environment variables, using
 `.env.example` as the template. They are never baked into the image and never
 reach the browser: the form posts to the same-origin `/api/contact` endpoint,
-which validates the submission before relaying it through SMTP.
+which validates the submission before handing it to Resend.
 
-Delivery goes through Resend: `SMTP_HOST=smtp.resend.com`, `SMTP_USER` is the
-literal string `resend`, and `SMTP_PASS` is a Resend API key. Set `CONTACT_FROM`
-explicitly — `server/index.js` falls back to `SMTP_USER` as the sender, which is
-not an address, and `CONTACT_FROM` is absent from the required-variable check, so
-omitting it fails only at send time. `TRUST_PROXY=true` is required behind the
-tunnel; without it every visitor shares one rate-limit bucket.
+Delivery needs three variables: `RESEND_API_KEY`, `CONTACT_TO`, and `CONTACT_FROM`.
+`CONTACT_FROM` must be an address on a domain verified in the Resend account — there
+is no fallback sender, and all three are checked before a send is attempted, so a
+missing one returns 503 rather than failing silently later. `TRUST_PROXY=true` is
+required behind the tunnel; without it every visitor shares one rate-limit bucket.
 
 The Resend API key is currently shared with the `guiltyspark` stack, so rotating
 it means updating both.
