@@ -1,0 +1,661 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_LOKI",
+      "label": "Loki",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "loki",
+      "pluginName": "Loki"
+    }
+  ],
+  "__requires": [],
+  "title": "builtbybrendan.com traffic",
+  "uid": "bbb-traffic",
+  "tags": [
+    "website",
+    "loki",
+    "traffic"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "1m",
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "editable": true,
+  "panels": [
+    {
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(count_over_time({container=\"brendan-website\"} | json [$__range]))",
+          "legendFormat": "Total requests",
+          "queryType": "instant",
+          "datasource": {
+            "type": "loki",
+            "uid": "${DS_LOKI}"
+          }
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "none"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          }
+        },
+        "overrides": []
+      },
+      "id": 1,
+      "title": "Total requests",
+      "type": "stat",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "${DS_LOKI}"
+      }
+    },
+    {
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | path =~ \"/assets/.*\\.js\" [$__range]))",
+          "legendFormat": "Browser page loads",
+          "queryType": "instant",
+          "datasource": {
+            "type": "loki",
+            "uid": "${DS_LOKI}"
+          }
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "none"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "green"
+          }
+        },
+        "overrides": []
+      },
+      "id": 2,
+      "title": "Browser page loads",
+      "type": "stat",
+      "gridPos": {
+        "x": 6,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "${DS_LOKI}"
+      }
+    },
+    {
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | ua =~ \"Uptime-Kuma.*\" [$__range]))",
+          "legendFormat": "Uptime Kuma checks",
+          "queryType": "instant",
+          "datasource": {
+            "type": "loki",
+            "uid": "${DS_LOKI}"
+          }
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "none"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "purple"
+          }
+        },
+        "overrides": []
+      },
+      "id": 3,
+      "title": "Uptime Kuma checks",
+      "type": "stat",
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "${DS_LOKI}"
+      }
+    },
+    {
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | status >= 400 [$__range]))",
+          "legendFormat": "Errors (4xx/5xx)",
+          "queryType": "instant",
+          "datasource": {
+            "type": "loki",
+            "uid": "${DS_LOKI}"
+          }
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "none"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "red"
+          }
+        },
+        "overrides": []
+      },
+      "id": 4,
+      "title": "Errors (4xx/5xx)",
+      "type": "stat",
+      "gridPos": {
+        "x": 18,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "${DS_LOKI}"
+      }
+    },
+    {
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | ua =~ \"Uptime-Kuma.*\" [$__auto]))",
+          "legendFormat": "Uptime Kuma",
+          "queryType": "range",
+          "datasource": {
+            "type": "loki",
+            "uid": "${DS_LOKI}"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | ua !~ \"Uptime-Kuma.*\" | ua =~ \"(?i).*(bot|crawler|spider|claudebot|gptbot|perplexity|ccbot|semrush|ahrefs|bingbot|googlebot).*\" [$__auto]))",
+          "legendFormat": "Crawlers",
+          "queryType": "range",
+          "datasource": {
+            "type": "loki",
+            "uid": "${DS_LOKI}"
+          }
+        },
+        {
+          "refId": "C",
+          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | ua !~ \"Uptime-Kuma.*\" | status >= 400 [$__auto]))",
+          "legendFormat": "Scanners (4xx/5xx)",
+          "queryType": "range",
+          "datasource": {
+            "type": "loki",
+            "uid": "${DS_LOKI}"
+          }
+        },
+        {
+          "refId": "D",
+          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | path =~ \"/assets/.*\\.js\" [$__auto]))",
+          "legendFormat": "Browser page loads",
+          "queryType": "range",
+          "datasource": {
+            "type": "loki",
+            "uid": "${DS_LOKI}"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 18,
+            "stacking": {
+              "mode": "normal"
+            },
+            "lineWidth": 1,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 5,
+      "title": "Traffic composition",
+      "type": "timeseries",
+      "gridPos": {
+        "x": 0,
+        "y": 4,
+        "w": 14,
+        "h": 9
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "${DS_LOKI}"
+      }
+    },
+    {
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (status) (count_over_time({container=\"brendan-website\"} | json [$__auto]))",
+          "legendFormat": "{{status}}",
+          "queryType": "range",
+          "datasource": {
+            "type": "loki",
+            "uid": "${DS_LOKI}"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 12,
+            "lineWidth": 1,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 6,
+      "title": "Response status",
+      "type": "timeseries",
+      "gridPos": {
+        "x": 14,
+        "y": 4,
+        "w": 10,
+        "h": 9
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "${DS_LOKI}"
+      }
+    },
+    {
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "topk(25, sum by (path) (count_over_time({container=\"brendan-website\"} | json | ua !~ \"Uptime-Kuma.*\" [$__range])))",
+          "legendFormat": "{{path}}",
+          "queryType": "instant",
+          "datasource": {
+            "type": "loki",
+            "uid": "${DS_LOKI}"
+          }
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "displayName": "Value",
+            "desc": true
+          }
+        ]
+      },
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "id": 7,
+      "title": "Top paths (excluding Kuma)",
+      "type": "table",
+      "gridPos": {
+        "x": 0,
+        "y": 13,
+        "w": 12,
+        "h": 9
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "${DS_LOKI}"
+      }
+    },
+    {
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "topk(25, sum by (ua) (count_over_time({container=\"brendan-website\"} | json | ua !~ \"Uptime-Kuma.*\" | ua != \"\" [$__range])))",
+          "legendFormat": "{{ua}}",
+          "queryType": "instant",
+          "datasource": {
+            "type": "loki",
+            "uid": "${DS_LOKI}"
+          }
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "displayName": "Value",
+            "desc": true
+          }
+        ]
+      },
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "id": 8,
+      "title": "Top user agents (excluding Kuma)",
+      "type": "table",
+      "gridPos": {
+        "x": 12,
+        "y": 13,
+        "w": 12,
+        "h": 9
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "${DS_LOKI}"
+      }
+    },
+    {
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "topk(25, sum by (ip) (count_over_time({container=\"brendan-website\"} | json | ua !~ \"Uptime-Kuma.*\" [$__range])))",
+          "legendFormat": "{{ip}}",
+          "queryType": "instant",
+          "datasource": {
+            "type": "loki",
+            "uid": "${DS_LOKI}"
+          }
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "displayName": "Value",
+            "desc": true
+          }
+        ]
+      },
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "id": 9,
+      "title": "Top source IPs (excluding Kuma)",
+      "type": "table",
+      "gridPos": {
+        "x": 0,
+        "y": 22,
+        "w": 8,
+        "h": 9
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "${DS_LOKI}"
+      }
+    },
+    {
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (country) (count_over_time({container=\"brendan-website\"} | json | ua !~ \"Uptime-Kuma.*\" | country != \"\" [$__range]))",
+          "legendFormat": "{{country}}",
+          "queryType": "instant",
+          "datasource": {
+            "type": "loki",
+            "uid": "${DS_LOKI}"
+          }
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "displayName": "Value",
+            "desc": true
+          }
+        ]
+      },
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "id": 10,
+      "title": "Countries",
+      "type": "table",
+      "gridPos": {
+        "x": 8,
+        "y": 22,
+        "w": 8,
+        "h": 9
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "${DS_LOKI}"
+      }
+    },
+    {
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "topk(20, sum by (ua) (count_over_time({container=\"brendan-website\"} | json | ua =~ \"(?i).*(bot|crawler|spider|claudebot|gptbot|perplexity|ccbot|semrush|ahrefs|bingbot|googlebot).*\" [$__range])))",
+          "legendFormat": "{{ua}}",
+          "queryType": "instant",
+          "datasource": {
+            "type": "loki",
+            "uid": "${DS_LOKI}"
+          }
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "displayName": "Value",
+            "desc": true
+          }
+        ]
+      },
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "id": 11,
+      "title": "Crawlers by name",
+      "type": "table",
+      "gridPos": {
+        "x": 16,
+        "y": 22,
+        "w": 8,
+        "h": 9
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "${DS_LOKI}"
+      }
+    },
+    {
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "{container=\"brendan-website\"} | json | ua !~ \"Uptime-Kuma.*\"",
+          "legendFormat": "",
+          "queryType": "range",
+          "datasource": {
+            "type": "loki",
+            "uid": "${DS_LOKI}"
+          }
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "wrapLogMessage": true,
+        "sortOrder": "Descending",
+        "enableLogDetails": true
+      },
+      "id": 12,
+      "title": "Live requests (excluding Kuma)",
+      "type": "logs",
+      "gridPos": {
+        "x": 0,
+        "y": 31,
+        "w": 24,
+        "h": 11
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "${DS_LOKI}"
+      }
+    }
+  ]
+}

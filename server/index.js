@@ -14,6 +14,7 @@ const MIN_FORM_TIME_MS = 2500
 const RATE_WINDOW_MS = 60 * 60 * 1000
 const RATE_LIMIT = 5
 const CHALLENGE_RATE_LIMIT = 30
+const ACCESS_LOG = process.env.ACCESS_LOG !== "false"
 
 const challenges = new Map()
 const submissionRates = new Map()
@@ -62,6 +63,26 @@ const clientIp = req => {
     if (typeof forwarded === "string") return forwarded.split(",")[0].trim()
   }
   return req.socket.remoteAddress || "unknown"
+}
+
+// One JSON line per completed response, read by Alloy from the container's stdout and
+// shipped to Loki. Cloudflare's CF-* headers survive the tunnel, so the real visitor IP
+// and country are available here even though the socket only ever sees the tunnel.
+const logAccess = (req, res, url, startedAt) => {
+  const { headers } = req
+  console.log(JSON.stringify({
+    t: new Date().toISOString(),
+    method: req.method,
+    path: url.pathname,
+    status: res.statusCode,
+    ms: Date.now() - startedAt,
+    ip: headers["cf-connecting-ip"] || clientIp(req),
+    country: headers["cf-ipcountry"] || null,
+    host: headers.host || null,
+    ua: headers["user-agent"] || null,
+    referer: headers.referer || null,
+    ray: headers["cf-ray"] || null,
+  }))
 }
 
 const allowRequest = (store, key, limit, windowMs) => {
@@ -248,7 +269,17 @@ const handleContact = async (req, res) => {
 }
 
 const serveStatic = async (req, res, pathname) => {
-  let relativePath = decodeURIComponent(pathname).replace(/^\/+/, "")
+  let decodedPath
+  try {
+    decodedPath = decodeURIComponent(pathname)
+  } catch {
+    // A malformed percent-escape is a client error, not a server one. Left to throw it
+    // rejects out of the request handler and takes the process down.
+    sendJson(res, 400, { message: "Bad request" })
+    return
+  }
+
+  let relativePath = decodedPath.replace(/^\/+/, "")
   if (!relativePath || relativePath.endsWith("/")) relativePath += "index.html"
 
   let filePath = path.resolve(ROOT, relativePath)
@@ -306,9 +337,7 @@ const serveStatic = async (req, res, pathname) => {
   else stream.pipe(res)
 }
 
-const server = http.createServer(async (req, res) => {
-  const url = new URL(req.url || "/", "http://localhost")
-
+const route = async (req, res, url) => {
   if (req.method === "GET" && url.pathname === "/health") {
     sendJson(res, 200, { ok: true })
     return
@@ -327,6 +356,19 @@ const server = http.createServer(async (req, res) => {
   }
 
   sendJson(res, 405, { message: "Method not allowed" }, { Allow: "GET, HEAD, POST" })
+}
+
+const server = http.createServer((req, res) => {
+  const startedAt = Date.now()
+  const url = new URL((req.url || "/").replace(/^\/+/, "/"), "http://localhost")
+  if (ACCESS_LOG) res.on("finish", () => logAccess(req, res, url, startedAt))
+
+  // A rejection here would otherwise be unhandled and terminate the process.
+  route(req, res, url).catch(error => {
+    console.error(JSON.stringify({ t: new Date().toISOString(), level: "error", path: url.pathname, msg: String(error?.stack || error) }))
+    if (res.headersSent) res.destroy()
+    else sendJson(res, 500, { message: "Internal error" })
+  })
 })
 
 setInterval(() => {

@@ -154,6 +154,32 @@ Before handing off visual changes:
 5. Inspect both desktop and mobile layouts. Measure critical image dimensions in the browser when a crop or stretching bug is involved.
 6. Run Lighthouse for material frontend changes. The redesign previously reached 98 Performance and 100 Accessibility, Best Practices, and SEO; avoid regressions.
 
+## Access Logging and Traffic Dashboard
+
+`server/index.js` emits one JSON line per completed response to stdout. Alloy collects the
+container's stdout into Loki under `{container="brendan-website"}`, where Loki's configured
+30-day retention expires it automatically.
+
+Fields: `t`, `method`, `path`, `status`, `ms`, `ip`, `country`, `host`, `ua`, `referer`, `ray`.
+
+`ip` and `country` come from Cloudflare's `CF-Connecting-IP` and `CF-IPCountry` headers, which
+survive the tunnel — the socket itself only ever sees the tunnel's address, so those headers are
+the only way to see the real visitor. Logging visitor IPs is deliberate: user agents are trivially
+spoofed, and the IP is the only stable way to tell one scanner cycling identities from a
+distributed one, or to write a WAF rule against either. Loki is not exposed to the internet.
+
+Set `ACCESS_LOG=false` to disable. It defaults to on, with an inline default in
+`docker-compose.yml`.
+
+`grafana/website-traffic.json` imports into the homelab Grafana (Loki datasource) and breaks the
+traffic down by class — Uptime Kuma, crawlers, scanners, and real browser page loads. Browser page
+loads are counted by requests for the fingerprinted JS bundle, which only a real browser fetches;
+HTML request counts are dominated by automated clients.
+
+Note that Cloudflare serves fingerprinted assets from its edge cache (`max-age=300`), so the origin
+undercounts asset requests. HTML is `cf-cache-status: DYNAMIC` and always reaches the origin, so
+page-level numbers are complete.
+
 ## Docker Compose Command
 
 **Always use Docker Compose V2:** `docker compose`, never the deprecated `docker-compose` command.

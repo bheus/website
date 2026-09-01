@@ -22,6 +22,7 @@ services:
       - SMTP_USER=${SMTP_USER:-}
       - SMTP_PASS=${SMTP_PASS:-}
       - TRUST_PROXY=${TRUST_PROXY:-false}
+      - ACCESS_LOG=${ACCESS_LOG:-true}
     networks:
       - web
     labels:
