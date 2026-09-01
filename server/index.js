@@ -15,6 +15,7 @@ const RATE_WINDOW_MS = 60 * 60 * 1000
 const RATE_LIMIT = 5
 const CHALLENGE_RATE_LIMIT = 30
 const ACCESS_LOG = process.env.ACCESS_LOG !== "false"
+const TRUST_PROXY = process.env.TRUST_PROXY !== "false"
 
 const challenges = new Map()
 const submissionRates = new Map()
@@ -57,10 +58,16 @@ const sendJson = (res, status, payload, extraHeaders = {}) => {
   res.end(JSON.stringify(payload))
 }
 
+// Behind the Cloudflare tunnel every request arrives from the same container address, so
+// without this the rate limiters share one bucket across all visitors and a single
+// submitter locks out everyone. CF-Connecting-IP is preferred over X-Forwarded-For: it is
+// a single value Cloudflare sets itself, not a client-extendable list.
 const clientIp = req => {
-  if (process.env.TRUST_PROXY === "true") {
+  if (TRUST_PROXY) {
+    const connecting = req.headers["cf-connecting-ip"]
+    if (typeof connecting === "string" && connecting.trim()) return connecting.trim()
     const forwarded = req.headers["x-forwarded-for"]
-    if (typeof forwarded === "string") return forwarded.split(",")[0].trim()
+    if (typeof forwarded === "string" && forwarded.trim()) return forwarded.split(",")[0].trim()
   }
   return req.socket.remoteAddress || "unknown"
 }
@@ -76,7 +83,7 @@ const logAccess = (req, res, url, startedAt) => {
     path: url.pathname,
     status: res.statusCode,
     ms: Date.now() - startedAt,
-    ip: headers["cf-connecting-ip"] || clientIp(req),
+    ip: clientIp(req),
     country: headers["cf-ipcountry"] || null,
     host: headers.host || null,
     ua: headers["user-agent"] || null,

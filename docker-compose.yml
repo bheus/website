@@ -21,7 +21,7 @@ services:
       - SMTP_REQUIRE_TLS=${SMTP_REQUIRE_TLS:-true}
       - SMTP_USER=${SMTP_USER:-}
       - SMTP_PASS=${SMTP_PASS:-}
-      - TRUST_PROXY=${TRUST_PROXY:-false}
+      - TRUST_PROXY=${TRUST_PROXY:-true}
       - ACCESS_LOG=${ACCESS_LOG:-true}
     networks:
       - web

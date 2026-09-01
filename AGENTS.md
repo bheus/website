@@ -171,6 +171,13 @@ distributed one, or to write a WAF rule against either. Loki is not exposed to t
 Set `ACCESS_LOG=false` to disable. It defaults to on, with an inline default in
 `docker-compose.yml`.
 
+`TRUST_PROXY` defaults to **true**, which is what makes both the access log and the contact
+rate limiters see the real visitor. Behind the tunnel every request reaches the origin from
+the same container address, so with it off the limiters key every visitor to one bucket and
+a single submitter locks out the whole site — five submissions per hour, globally. Turn it
+off only when the origin is reachable directly by untrusted clients, since a client that can
+reach it without passing through Cloudflare can forge `CF-Connecting-IP` and evade the limit.
+
 `grafana/website-traffic.json` imports into the homelab Grafana (Loki datasource) and breaks the
 traffic down by class — Uptime Kuma, crawlers, scanners, and real browser page loads. Browser page
 loads are counted by requests for the fingerprinted JS bundle, which only a real browser fetches;
