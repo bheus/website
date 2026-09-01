@@ -122,8 +122,8 @@ carried by that document plus a few static files.
 
 `og-image.jpg`, `llms.txt`, `robots.txt`, and `sitemap.xml` are all non-fingerprinted,
 and three of them cannot be fingerprinted even in principle — see the Cloudflare entry in
-**Known Issues** for why, and for the zone setting that is the actual fix. While that
-setting is unconfirmed, purge the specific URL after changing any of them.
+**Known Issues** for why. The zone setting that makes their short TTL stick is now in
+place, so replacing one of them propagates in about five minutes with no manual purge.
 
 ## Local Development and Validation
 
@@ -201,54 +201,48 @@ and left the host on an image no commit pointed at. Deploy by pushing to `master
 
 ## Known Issues
 
-Open problems, each verified against production. None block deployment. Confirm a
-finding still reproduces before acting on it.
+Open problems, each verified against production, plus one resolved entry kept for its
+reasoning. None block deployment. Confirm a finding still reproduces before acting on it.
 
-### Cloudflare overrides the origin's cache headers
+### Cloudflare overrode the origin's cache headers (resolved 2026-08-30)
 
-The origin serves non-fingerprinted assets with a short TTL, but Cloudflare rewrites
-it to a year:
+Kept because the wrong fixes are still tempting and the reasoning is not visible in the
+code.
 
-```
-Pi origin:   Cache-Control: public, max-age=300
-Cloudflare:  cache-control: public, max-age=31536000, immutable
-```
+Cloudflare's **Browser Cache TTL** zone setting rewrote the origin's `max-age=300` on
+every non-fingerprinted asset — a year with `immutable` when first found, later 4 hours.
+Either way, replacing `favicon.ico`, `og-image.jpg`, `robots.txt`, or any sibling left
+visitors on the old copy long past the origin's intent. A new `favicon.ico` once sat
+behind a 13-hour-old edge entry and needed a manual purge.
 
-`server/index.js` is correct — it applies `immutable` only to files matching
-`\.[a-f0-9]{8,}\.(js|css)$`, so hashed bundles are immutable and `favicon.ico`,
-`apple-touch-icon.png`, `android-chrome-*`, `favicon-16x16.png`, `favicon-32x32.png`,
-`site.webmanifest`, `brendan-profile.webp`, `og-image.jpg`, `robots.txt`, `llms.txt`,
-and `sitemap.xml` are not. The override is a zone setting, so **do not "fix" this in
-`server/index.js` — the change would have no effect.**
-
-Consequence: replacing any of those files leaves visitors on the old copy roughly
-forever. This already happened once, when a new `favicon.ico` sat behind a 13-hour-old
-edge entry and needed a manual purge.
-
-**Chosen fix: the Cloudflare zone setting.** Brendan is applying it in the dashboard —
-Browser Cache TTL set to *Respect Existing Headers*, or a Cache Rule scoped to those
-paths. Verify it took effect by comparing origin and edge; the two hashes should match
-after a change, without a manual purge:
+**The fix was in the Cloudflare dashboard:** Caching → Configuration → Browser Cache TTL
+→ *Respect Existing Headers*. Page Rules and Cache Rules both override that zone setting,
+so check them first if the override ever returns. Verify:
 
 ```bash
-ssh bheussler@apple-pi.lan "curl -s http://127.0.0.1:80/favicon.ico | sha256sum"
-curl -s https://builtbybrendan.com/favicon.ico | shasum -a 256
 curl -sI https://builtbybrendan.com/favicon.ico | grep -i cache-control
 ```
 
-That last line should report the origin's `max-age=300`, not `max-age=31536000`. Until
-it does, keep purging the specific URL after changing any file in the list above.
+It should report the origin's `max-age=300`. A `cf-cache-status: HIT` with a small `age`
+is the edge cache on that same 300s TTL, which is correct and unrelated.
 
-**Fingerprinting is not the alternative here, and was considered and rejected.** It only
-works for files reached through a reference in a document that itself revalidates. Our
-HTML is `no-cache, must-revalidate`, so `og-image.jpg`, `site.webmanifest`, and the icon
-PNGs *could* be hashed — but `robots.txt` and `llms.txt` cannot be, ever: crawlers and
-agents fetch those at a fixed, well-known path, and a hashed name is a file nobody
-requests. `sitemap.xml` is hashable in principle and pointless in practice, because it is
-discovered through `robots.txt`, which is itself unhashable, and Search Console holds a
-registered URL. `favicon.ico` must also stay at the root, because browsers probe
-`/favicon.ico` directly whether or not a `<link>` points elsewhere. So fingerprinting
-would cover a strict subset of the problem while the zone setting covers all of it.
+`server/index.js` was never the problem. It applies `immutable` only to files matching
+`\.[a-f0-9]{8,}\.(js|css)$`, so hashed bundles are immutable and `favicon.ico`,
+`apple-touch-icon.png`, `android-chrome-*`, `favicon-16x16.png`, `favicon-32x32.png`,
+`site.webmanifest`, `brendan-profile.webp`, `og-image.jpg`, `robots.txt`, `llms.txt`,
+and `sitemap.xml` are not. **Do not "fix" a recurrence there — the change would have no
+effect.**
+
+**Fingerprinting was considered and rejected.** It only works for files reached through a
+reference in a document that itself revalidates. Our HTML is `no-cache, must-revalidate`,
+so `og-image.jpg`, `site.webmanifest`, and the icon PNGs *could* be hashed — but
+`robots.txt` and `llms.txt` cannot be, ever: crawlers and agents fetch those at a fixed,
+well-known path, and a hashed name is a file nobody requests. `sitemap.xml` is hashable in
+principle and pointless in practice, because it is discovered through `robots.txt`, which
+is itself unhashable, and Search Console holds a registered URL. `favicon.ico` must also
+stay at the root, because browsers probe `/favicon.ico` directly whether or not a `<link>`
+points elsewhere. So fingerprinting would have covered a strict subset of the problem
+while the zone setting covers all of it.
 
 If fingerprinting is ever revisited for the social card alone — unfurl caches at LinkedIn
 and Facebook are sticky in ways no origin header controls, so a fresh URL is the only
