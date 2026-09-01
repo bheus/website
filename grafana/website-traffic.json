@@ -80,7 +80,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | path =~ \"/assets/.*\\.js\" [$__range]))",
+          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | path =~ `/assets/.*\\.js` [$__range]))",
           "legendFormat": "Browser page loads",
           "queryType": "instant",
           "datasource": {
@@ -257,7 +257,7 @@
         },
         {
           "refId": "D",
-          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | path =~ \"/assets/.*\\.js\" [$__auto]))",
+          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | path =~ `/assets/.*\\.js` [$__auto]))",
           "legendFormat": "Browser page loads",
           "queryType": "range",
           "datasource": {
