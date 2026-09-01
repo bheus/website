@@ -31,7 +31,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(count_over_time({container=\"brendan-website\"} | json [$__range]))",
+          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | __error__=\"\" [$__range]))",
           "legendFormat": "Total requests",
           "queryType": "instant",
           "datasource": {
@@ -80,7 +80,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | path =~ \"/assets/.*\\.js\" [$__range]))",
+          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | path =~ \"/assets/.*\\.js\" [$__range]))",
           "legendFormat": "Browser page loads",
           "queryType": "instant",
           "datasource": {
@@ -129,7 +129,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | ua =~ \"Uptime-Kuma.*\" [$__range]))",
+          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | ua =~ \"Uptime-Kuma.*\" [$__range]))",
           "legendFormat": "Uptime Kuma checks",
           "queryType": "instant",
           "datasource": {
@@ -178,7 +178,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | status >= 400 [$__range]))",
+          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | status >= 400 [$__range]))",
           "legendFormat": "Errors (4xx/5xx)",
           "queryType": "instant",
           "datasource": {
@@ -227,7 +227,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | ua =~ \"Uptime-Kuma.*\" [$__auto]))",
+          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | ua =~ \"Uptime-Kuma.*\" [$__auto]))",
           "legendFormat": "Uptime Kuma",
           "queryType": "range",
           "datasource": {
@@ -237,7 +237,7 @@
         },
         {
           "refId": "B",
-          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | ua !~ \"Uptime-Kuma.*\" | ua =~ \"(?i).*(bot|crawler|spider|claudebot|gptbot|perplexity|ccbot|semrush|ahrefs|bingbot|googlebot).*\" [$__auto]))",
+          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | ua !~ \"Uptime-Kuma.*\" | ua =~ \"(?i).*(bot|crawler|spider|claudebot|gptbot|perplexity|ccbot|semrush|ahrefs|bingbot|googlebot).*\" [$__auto]))",
           "legendFormat": "Crawlers",
           "queryType": "range",
           "datasource": {
@@ -247,7 +247,7 @@
         },
         {
           "refId": "C",
-          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | ua !~ \"Uptime-Kuma.*\" | status >= 400 [$__auto]))",
+          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | ua !~ \"Uptime-Kuma.*\" | status >= 400 [$__auto]))",
           "legendFormat": "Scanners (4xx/5xx)",
           "queryType": "range",
           "datasource": {
@@ -257,7 +257,7 @@
         },
         {
           "refId": "D",
-          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | path =~ \"/assets/.*\\.js\" [$__auto]))",
+          "expr": "sum(count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | path =~ \"/assets/.*\\.js\" [$__auto]))",
           "legendFormat": "Browser page loads",
           "queryType": "range",
           "datasource": {
@@ -309,7 +309,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum by (status) (count_over_time({container=\"brendan-website\"} | json [$__auto]))",
+          "expr": "sum by (status) (count_over_time({container=\"brendan-website\"} | json | __error__=\"\" [$__auto]))",
           "legendFormat": "{{status}}",
           "queryType": "range",
           "datasource": {
@@ -358,7 +358,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "topk(25, sum by (path) (count_over_time({container=\"brendan-website\"} | json | ua !~ \"Uptime-Kuma.*\" [$__range])))",
+          "expr": "topk(25, sum by (path) (count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | ua !~ \"Uptime-Kuma.*\" [$__range])))",
           "legendFormat": "{{path}}",
           "queryType": "instant",
           "datasource": {
@@ -412,7 +412,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "topk(25, sum by (ua) (count_over_time({container=\"brendan-website\"} | json | ua !~ \"Uptime-Kuma.*\" | ua != \"\" [$__range])))",
+          "expr": "topk(25, sum by (ua) (count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | ua !~ \"Uptime-Kuma.*\" | ua != \"\" [$__range])))",
           "legendFormat": "{{ua}}",
           "queryType": "instant",
           "datasource": {
@@ -466,7 +466,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "topk(25, sum by (ip) (count_over_time({container=\"brendan-website\"} | json | ua !~ \"Uptime-Kuma.*\" [$__range])))",
+          "expr": "topk(25, sum by (ip) (count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | ua !~ \"Uptime-Kuma.*\" [$__range])))",
           "legendFormat": "{{ip}}",
           "queryType": "instant",
           "datasource": {
@@ -520,7 +520,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum by (country) (count_over_time({container=\"brendan-website\"} | json | ua !~ \"Uptime-Kuma.*\" | country != \"\" [$__range]))",
+          "expr": "sum by (country) (count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | ua !~ \"Uptime-Kuma.*\" | country != \"\" [$__range]))",
           "legendFormat": "{{country}}",
           "queryType": "instant",
           "datasource": {
@@ -574,7 +574,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "topk(20, sum by (ua) (count_over_time({container=\"brendan-website\"} | json | ua =~ \"(?i).*(bot|crawler|spider|claudebot|gptbot|perplexity|ccbot|semrush|ahrefs|bingbot|googlebot).*\" [$__range])))",
+          "expr": "topk(20, sum by (ua) (count_over_time({container=\"brendan-website\"} | json | __error__=\"\" | ua =~ \"(?i).*(bot|crawler|spider|claudebot|gptbot|perplexity|ccbot|semrush|ahrefs|bingbot|googlebot).*\" [$__range])))",
           "legendFormat": "{{ua}}",
           "queryType": "instant",
           "datasource": {
@@ -628,7 +628,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "{container=\"brendan-website\"} | json | ua !~ \"Uptime-Kuma.*\"",
+          "expr": "{container=\"brendan-website\"} | json | __error__=\"\" | ua !~ \"Uptime-Kuma.*\"",
           "legendFormat": "",
           "queryType": "range",
           "datasource": {
