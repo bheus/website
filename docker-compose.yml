@@ -3,8 +3,6 @@ services:
     image: ${WEBSITE_IMAGE:-ghcr.io/bheus/website:latest}
     container_name: brendan-website
     restart: unless-stopped
-    ports:
-      - "80:8080"
     env_file:
       - path: .env
         required: false
@@ -20,9 +18,22 @@ services:
       - ACCESS_LOG=${ACCESS_LOG:-true}
     networks:
       - web
+      - caddy
     labels:
       - "com.website.description=Brendan's Personal Website"
+      # No published port: Caddy owns :80 and reaches 8080 over the caddy
+      # network. cloudflared still sends builtbybrendan.com to localhost:80, so
+      # the tunnel config is unchanged — Caddy answers there and routes on Host.
+      #
+      # http:// is explicit so Caddy serves plaintext and never attempts ACME.
+      # TLS for the public hostnames terminates at Cloudflare's edge and the
+      # tunnel speaks plain HTTP to this origin.
+      - "caddy=http://builtbybrendan.com, http://www.builtbybrendan.com, http://website.svc.lan"
+      - "caddy.reverse_proxy={{upstreams 8080}}"
 
 networks:
   web:
     driver: bridge
+  caddy:
+    external: true
+    name: caddy
