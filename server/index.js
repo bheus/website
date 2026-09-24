@@ -40,6 +40,13 @@ const mimeTypes = {
   ".xml": "application/xml; charset=utf-8",
 }
 
+// Routes from the retired Gatsby blog that Google still lists in search results. A 301
+// hands their search standing to the page that replaced them instead of letting it lapse.
+const retiredRoutes = new Map([
+  ["/about", "/#about"],
+  ["/about/", "/#about"],
+])
+
 const securityHeaders = {
   "Content-Security-Policy": "default-src 'self'; base-uri 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; img-src 'self' data:; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'",
   "Cross-Origin-Opener-Policy": "same-origin",
@@ -344,6 +351,11 @@ const route = async (req, res, url) => {
   }
   if (req.method === "POST" && url.pathname === "/api/contact") {
     await handleContact(req, res)
+    return
+  }
+  if ((req.method === "GET" || req.method === "HEAD") && retiredRoutes.has(url.pathname)) {
+    res.writeHead(301, { Location: retiredRoutes.get(url.pathname) })
+    res.end()
     return
   }
   if (req.method === "GET" || req.method === "HEAD") {
