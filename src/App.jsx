@@ -40,10 +40,9 @@ const TurboTaxVisual = () => (
       </div>
       <div className="tt-list">
         <span className="mini-label">LOCAL TAX HELP</span>
-        <strong>Find an expert nearby</strong>
+        <strong>An easy way to find an expert nearby</strong>
         <span className="skeleton skeleton--long" />
         <span className="skeleton skeleton--short" />
-        <span className="tt-button">Schedule</span>
       </div>
     </div>
   </div>
@@ -210,9 +209,10 @@ const ContactForm = () => {
       onFocus={() => prepareChallenge().catch(() => {})}
       onPointerDown={() => prepareChallenge().catch(() => {})}
     >
+      <p className="section-kicker form-kicker">Go on, tell me</p>
       <div className="form-row">
         <label>
-          <span>Name</span>
+          <span>Your name</span>
           <input type="text" name="name" autoComplete="name" maxLength="100" required />
         </label>
         <label>
@@ -221,11 +221,11 @@ const ContactForm = () => {
         </label>
       </div>
       <label>
-        <span>Company <em>optional</em></span>
+        <span>Your company <em>optional</em></span>
         <input type="text" name="company" autoComplete="organization" maxLength="120" />
       </label>
       <label>
-        <span>What are you working on?</span>
+        <span>Your project</span>
         <textarea name="message" rows="5" minLength="20" maxLength="5000" required />
       </label>
       <label className="form-trap" aria-hidden="true">
@@ -234,7 +234,7 @@ const ContactForm = () => {
       </label>
       <div className="form-submit-row">
         <button className="button button--light" type="submit" disabled={status.type === "working"}>
-          {status.type === "working" ? "Sending…" : "Send message"} <Arrow />
+          {status.type === "working" ? "Sending…" : "Send it"} <Arrow />
         </button>
         <p className={`form-status form-status--${status.type}`} aria-live="polite">
           {status.message}
@@ -266,18 +266,17 @@ export default function App() {
           <div className="hero-inner">
             <div className="availability reveal reveal--one">
               <span className="availability-dot" />
-              Product engineering · Systems · Automation
+              Engineering · Systems · Automation
             </div>
-            <h1 id="hero-title" className="reveal reveal--two">Serious software.<br /><em>Easygoing process.</em></h1>
+            <h1 id="hero-title" className="reveal reveal--two">I do serious software consulting <em>for fun.</em></h1>
             <p className="hero-lede reveal reveal--three">
-              I’m Brendan, a software consultant who turns complicated systems into products that feel simple, fast, and dependable.
+              I’m Brendan, a full-stack engineer obsessed with making software that doesn’t need hand-holding. So I launch seaworthy apps—and sometimes actual boats—in and around San Diego, CA.
             </p>
             <div className="hero-actions reveal reveal--four">
-              <a className="button button--primary" href="#contact">Tell me what you’re building <Arrow /></a>
-              <a className="text-link" href="#work">See selected work <span>↓</span></a>
+              <a className="button button--primary" href="#contact">Work with me <Arrow /></a>
+              <a className="text-link" href="#work">Explore my work <span>↓</span></a>
             </div>
           </div>
-          <div className="hero-location reveal reveal--four"><LocationMark /> San Diego, California</div>
         </section>
 
         <ul className="intro-band" aria-label="What I do">
@@ -290,22 +289,22 @@ export default function App() {
         <section className="work-section" id="work" aria-labelledby="work-title">
           <div className="section-heading">
             <div>
-              <span className="section-kicker">Selected work</span>
-              <h2 id="work-title">Built for people.<br />Engineered to scale.</h2>
+              <span className="section-kicker">What I work on</span>
+              <h2 id="work-title">Web platforms of all sizes<br />for real people of all kinds.</h2>
             </div>
-            <p>From high-traffic customer experiences to focused products, I care about the invisible details that make software hold up.</p>
+            <p>I build everything from high-traffic customer interfaces to hyper-focused personal experiences. And what I care about most is making every one feel flawless.</p>
           </div>
 
           <div className="work-group">
-            <div className="group-label"><span>01</span> Professional work</div>
+            <div className="group-label"><span>01</span> Projects I’ve led</div>
             <ul className="project-grid">
               <ProjectCard
                 number="01"
-                eyebrow="Intuit · TurboTax"
-                title="Local tax help, at national scale."
-                description="A scalable local discovery platform for hundreds of TurboTax stores and thousands of expert profiles—connecting customers with trusted tax help nearby."
+                eyebrow="Intuit · Store locator"
+                title="Behind the scenes of national storefronts."
+                description="What you see: a discovery platform for hundreds of TurboTax stores and thousands of expert profiles. What you don’t: the data that powers it."
                 href="https://turbotax.intuit.com/local-tax-offices/ny/new-york/d51a4afe6691489aa78ee8793a6bc278/"
-                linkLabel="View a live location"
+                linkLabel="See the site"
                 className="project-card--wide"
               >
                 <TurboTaxVisual />
@@ -313,11 +312,11 @@ export default function App() {
 
               <ProjectCard
                 number="02"
-                eyebrow="Certified Pickleball Player"
-                title="A digital home for a fast-growing sport."
-                description="A player platform combining verified credentials, personalized gear, community discovery, and AI-powered match analysis."
+                eyebrow="Certified Pickleball"
+                title="A place for athletes to meet their match."
+                description="This is the hub that gives pickleball players what every fanatic wants: personalized gear, AI-powered match analyses, community access, and proof they’re at the top of their game."
                 href="https://www.certifiedpickleballplayer.com/"
-                linkLabel="Visit the product"
+                linkLabel="Tour the court"
               >
                 <PickleballVisual />
               </ProjectCard>
@@ -325,15 +324,15 @@ export default function App() {
           </div>
 
           <div className="work-group work-group--personal">
-            <div className="group-label"><span>02</span> Personal work</div>
+            <div className="group-label"><span>02</span> Platforms I’ve built</div>
             <ul className="project-grid project-grid--reverse">
               <ProjectCard
                 number="03"
-                eyebrow="Abraham · Trading Algorithm"
-                title="A trading algorithm built on evidence, not instinct."
-                description="An algorithmic trading system that beats the S&amp;P 500 in historical testing, backed by reproducible research and disciplined risk controls."
+                eyebrow="Abraham · Trading"
+                title="A trading system that shows its work."
+                description="Backed by reproducible research and disciplined risk controls, this algorithm uses evidence to beat (basically) every hunch about the S&amp;P 500."
                 href="#contact"
-                linkLabel="Contact me to learn more"
+                linkLabel="Ask for details"
                 className="project-card--contact"
               >
                 <AbrahamVisual />
@@ -341,11 +340,11 @@ export default function App() {
 
               <ProjectCard
                 number="04"
-                eyebrow="GuiltySpark · AI Operations"
+                eyebrow="AI Operations"
                 title="The log monitor that fixes what it finds."
-                description="An autonomous engineering agent that watches production logs, finds bugs in context, and turns incidents into tested fixes."
+                description="With the help of an autonomous engineering agent that watches production logs, finds bugs in context, and corrects errors on sight, you can finally close your eyes."
                 href="https://guiltyspark.builtbybrendan.com/"
-                linkLabel="Explore GuiltySpark"
+                linkLabel="Check it out"
                 className="project-card--wide"
               >
                 <GuiltySparkVisual />
@@ -361,14 +360,15 @@ export default function App() {
             <span className="photo-sun" aria-hidden="true" />
           </div>
           <div className="about-copy">
-            <span className="section-kicker">A little about me</span>
-            <h2 id="about-title">Calm thinking for complicated builds.</h2>
-            <p className="about-lede">I’m a full-stack engineer and consultant based in San Diego, California.</p>
-            <p>I’ve spent my career building software people depend on—from customer experiences at Intuit to lean, ambitious products. I’m at my best when the problem is messy, the stakes are real, and the path forward needs equal parts technical depth and common sense.</p>
+            <span className="section-kicker">A bit about me</span>
+            <h2 id="about-title">A full-stack engineer for your wildest projects.</h2>
+            <p className="about-lede">My friends call me Moose. And when your project is a bear, you need big ideas.</p>
+            <p>That’s why I spend my time building software with the kind of strength, speed, and stealth that’ll surprise you.</p>
+            <p className="section-kicker values-kicker">Rules I play by</p>
             <ul className="about-values">
-              <li><span>01</span><strong>Clear over clever</strong><p>Simple systems are easier to ship, run, and trust.</p></li>
-              <li><span>02</span><strong>Steady under pressure</strong><p>No drama. Just thoughtful decisions and consistent progress.</p></li>
-              <li><span>03</span><strong>Built to last</strong><p>Good architecture should create options, not obligations.</p></li>
+              <li><strong>Look good</strong><p>I think the systems we’re happiest to ship, run, and trust are the ones that are easiest on the eyes.</p></li>
+              <li><strong>Go fast</strong><p>Making consistent, thoughtful decisions can make even the most complex projects feel uncomplicated.</p></li>
+              <li><strong>Hold tight</strong><p>I pay attention to the details that seem small, but add up to a structure scalable products can stand on.</p></li>
             </ul>
           </div>
         </section>
@@ -382,9 +382,9 @@ export default function App() {
           <div className="contact-grid">
             <div className="contact-copy">
               <span className="section-kicker">Contact me</span>
-              <h2 id="contact-title">Let’s make something<br /><em>solid and useful.</em></h2>
-              <p>Tell me a little about the project, the knot you’re trying to untangle, or the idea you can’t quite leave alone.</p>
-              <span className="contact-location"><LocationMark /> San Diego · Working with good people everywhere</span>
+              <h2 id="contact-title">Let’s build the software <em>of your dreams.</em></h2>
+              <p>Tell me a little about the knot you’re trying to untangle, the product you can’t stop thinking about, or the idea you just know the world needs. I’ll take you seriously.</p>
+              <span className="contact-location"><LocationMark /> Based in California · Working with you</span>
             </div>
             <ContactForm />
           </div>
