@@ -22,8 +22,8 @@ const Landscape = () => (
     </svg>
     <svg className="hills hills--front" viewBox="0 0 1440 300" preserveAspectRatio="none">
       <path d="M0 215c213 38 290-86 469-73 153 12 218 104 375 95 164-9 241-105 596-74v137H0Z" />
+      <path className="trail" d="M1212 163C1208 176 1226 184 1222 195 1217 210 1180 220 1150 235 1110 255 1020 278 965 300H1155C1170 280 1195 258 1210 235 1225 212 1252 208 1248 195 1244 182 1222 174 1218 163Z" />
     </svg>
-    <div className="trail" />
   </div>
 )
 
@@ -99,7 +99,7 @@ const GuiltySparkVisual = () => (
   </div>
 )
 
-const ProjectCard = ({ number, eyebrow, title, description, href, linkLabel, children, className = "" }) => {
+const ProjectCard = ({ eyebrow, title, description, href, linkLabel, children, className = "" }) => {
   const Tag = href ? "a" : "article"
   const externalProps = href
     ? { href, ...(href.startsWith("http") ? { target: "_blank", rel: "noreferrer" } : {}) }
@@ -108,10 +108,7 @@ const ProjectCard = ({ number, eyebrow, title, description, href, linkLabel, chi
   return (
     <li className="project-item">
       <Tag className={`project-card ${className}`} {...externalProps}>
-        <div className="project-card__top">
-          <span className="project-number">{number}</span>
-          <span className="project-eyebrow">{eyebrow}</span>
-        </div>
+        <span className="project-eyebrow">{eyebrow}</span>
         {children}
         <div className="project-copy">
           <h3>{title}</h3>
@@ -264,11 +261,11 @@ export default function App() {
         <section className="hero" aria-labelledby="hero-title">
           <Landscape />
           <div className="hero-inner">
-            <div className="availability reveal reveal--one">
-              <span className="availability-dot" />
+            <div className="hero-kicker reveal reveal--one">
+              <span className="hero-kicker-dot" />
               Engineering · Systems · Automation
             </div>
-            <h1 id="hero-title" className="reveal reveal--two">I do serious software consulting <em>for fun.</em></h1>
+            <h1 id="hero-title" className="reveal reveal--two">I do serious software consulting <em>for&nbsp;fun.</em></h1>
             <p className="hero-lede reveal reveal--three">
               I’m Brendan, a full-stack engineer obsessed with making software that doesn’t need hand-holding. So I launch seaworthy apps—and sometimes actual boats—in and around San Diego, CA.
             </p>
@@ -296,10 +293,9 @@ export default function App() {
           </div>
 
           <div className="work-group">
-            <div className="group-label"><span>01</span> Projects I’ve led</div>
+            <div className="group-label">Projects I’ve led</div>
             <ul className="project-grid">
               <ProjectCard
-                number="01"
                 eyebrow="Intuit · Store locator"
                 title="Behind the scenes of national storefronts."
                 description="What you see: a discovery platform for hundreds of TurboTax stores and thousands of expert profiles. What you don’t: the data that powers it."
@@ -311,7 +307,6 @@ export default function App() {
               </ProjectCard>
 
               <ProjectCard
-                number="02"
                 eyebrow="Certified Pickleball"
                 title="A place for athletes to meet their match."
                 description="This is the hub that gives pickleball players what every fanatic wants: personalized gear, AI-powered match analyses, community access, and proof they’re at the top of their game."
@@ -324,13 +319,12 @@ export default function App() {
           </div>
 
           <div className="work-group work-group--personal">
-            <div className="group-label"><span>02</span> Platforms I’ve built</div>
+            <div className="group-label">Platforms I’ve built</div>
             <ul className="project-grid project-grid--reverse">
               <ProjectCard
-                number="03"
                 eyebrow="Abraham · Trading"
                 title="A trading system that shows its work."
-                description="Backed by reproducible research and disciplined risk controls, this algorithm uses evidence to beat (basically) every hunch about the S&amp;P 500."
+                description="Backed by reproducible research and disciplined risk controls, this algorithm uses evidence to beat (basically) every hunch—and, in historical testing, the S&amp;P&nbsp;500."
                 href="#contact"
                 linkLabel="Ask for details"
                 className="project-card--contact"
@@ -339,7 +333,6 @@ export default function App() {
               </ProjectCard>
 
               <ProjectCard
-                number="04"
                 eyebrow="AI Operations"
                 title="The log monitor that fixes what it finds."
                 description="With the help of an autonomous engineering agent that watches production logs, finds bugs in context, and corrects errors on sight, you can finally close your eyes."
@@ -382,7 +375,7 @@ export default function App() {
           <div className="contact-grid">
             <div className="contact-copy">
               <span className="section-kicker">Contact me</span>
-              <h2 id="contact-title">Let’s build the software <em>of your dreams.</em></h2>
+              <h2 id="contact-title">Let’s build the software <em>of&nbsp;your&nbsp;dreams.</em></h2>
               <p>Tell me a little about the knot you’re trying to untangle, the product you can’t stop thinking about, or the idea you just know the world needs. I’ll take you seriously.</p>
               <span className="contact-location"><LocationMark /> Based in California · Working with you</span>
             </div>

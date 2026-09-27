@@ -53,7 +53,7 @@ The exact approved destinations and current copy are documented in `AGENTS.md` a
 
 ## Known Issues
 
-`AGENTS.md` has a **Known Issues** section covering two failing accessibility audits, a
+`AGENTS.md` has a **Known Issues** section covering the brand link's label mismatch, a
 mobile FCP regression, and the resolved Cloudflare cache override. Read it before assuming
 a surprising measurement is new. The cache override was a Cloudflare zone setting, fixed
 by Browser Cache TTL → *Respect Existing Headers*; if it ever returns, the fix is in the

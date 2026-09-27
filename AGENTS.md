@@ -289,25 +289,16 @@ by Vite's `publicDir` and are never hashed, so it needs a real step in `prerende
 regex in `server/index.js` matches `js|css` only, so it would need widening or the hashed
 file still goes out with `max-age=300`.
 
-### Two accessibility audits fail
+### Brand link label does not match its visible text
 
-Lighthouse desktop scores 95 on accessibility because of two long-standing issues.
-Both predate the Vite migration.
+`label-content-name-mismatch` still fails on the header brand link. Its
+`aria-label="BH — Brendan Heussler, home"` does not contain the visible text, because the
+em dash breaks the match. Screen reader users hear a name that does not match what
+sighted users read aloud. Lighthouse 12 gives the audit no weight, so desktop
+accessibility scores 100 with it failing; fix it for the users, not the score.
 
-1. `color-contrast` on `.form-note` — the contact form's "Protected against automated
-   submissions" line does not meet the contrast ratio.
-2. `label-content-name-mismatch` on the header and footer brand link. Its
-   `aria-label="BH — Brendan Heussler, home"` does not contain the visible text, because
-   the em dash breaks the match. Screen reader users hear a name that does not match
-   what sighted users read aloud.
-
-Fixing both should reach 100. Note that mobile already scores 100 — the failures are
-weighted differently there, so measure on the desktop preset.
-
-The desktop score moved from 96 to 95 during the Vite migration without any
-accessibility change: Gatsby injected a `tabindex="-1"` focus wrapper, which made the
-`tabindex` audit applicable and passing at weight 7. Without that element the audit
-drops out of the denominator entirely. Do not chase that single point.
+The other long-standing failure, `color-contrast` on `.form-note`, was fixed when the
+contact section's muted text moved to `--on-dark-muted`.
 
 ### Mobile First Contentful Paint is slower than the Gatsby build
 
