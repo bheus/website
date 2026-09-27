@@ -90,7 +90,7 @@ svg { display: block; }
 
 .hero-inner { position: relative; z-index: 5; max-width: 1440px; margin: 0 auto; padding: clamp(145px, 17vh, 215px) 5vw 0; }
 
-.availability { display: flex; align-items: center; gap: 10px; width: max-content; margin-bottom: 28px; font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+.availability { display: flex; align-items: center; gap: 10px; width: max-content; margin-bottom: 28px; font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
 .availability-dot { width: 7px; height: 7px; border-radius: 50%; background: #5e8e5b; box-shadow: 0 0 0 5px rgba(94, 142, 91, .13); }
 
 h1, h2, h3, p { margin-top: 0; }
@@ -119,19 +119,19 @@ h1, h2, h3, p { margin-top: 0; }
 .reveal--one { animation-delay: .08s; }.reveal--two { animation-delay: .16s; }.reveal--three { animation-delay: .26s; }.reveal--four { animation-delay: .36s; }
 @keyframes reveal { to { opacity: 1; transform: none; } }
 
-.intro-band { display: flex; align-items: center; justify-content: center; gap: 24px; min-height: 84px; margin: 0; padding: 20px 5vw; list-style: none; background: var(--forest); color: #eae6dc; font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+.intro-band { display: flex; align-items: center; justify-content: center; gap: 24px; min-height: 84px; margin: 0; padding: 20px 5vw; list-style: none; background: var(--forest); color: #eae6dc; font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
 /* gap: inherit keeps the separator spacing in step with the band's own gap at every breakpoint. */
 .intro-band li { display: flex; align-items: center; gap: inherit; }
 .intro-band li + li::before { content: ""; width: 4px; height: 4px; border-radius: 50%; background: var(--sand); }
 
 .work-section { max-width: 1440px; margin: 0 auto; padding: 140px 5vw 160px; }
 .section-heading { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(270px, .6fr); align-items: end; gap: 80px; margin-bottom: 120px; }
-.section-kicker { display: block; margin-bottom: 22px; color: #526158; font-size: 12px; font-weight: 600; letter-spacing: .13em; text-transform: uppercase; }
+.section-kicker { display: block; margin-bottom: 22px; color: #526158; font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
 .section-heading h2, .about-copy h2 { margin: 0; font-size: clamp(48px, 6vw, 84px); font-weight: 500; line-height: .98; letter-spacing: -.055em; }
 .section-heading > p { max-width: 430px; margin: 0 0 6px; color: #58635b; font-size: 17px; }
 
 .work-group + .work-group { margin-top: 125px; }
-.group-label { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; padding-bottom: 14px; border-bottom: 1px solid var(--line); font-size: 13px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; }
+.group-label { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; padding-bottom: 14px; border-bottom: 1px solid var(--line); font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
 .group-label span { color: #5f6b61; font-family: var(--serif); font-size: 16px; font-style: italic; font-weight: 400; }
 .project-grid { display: grid; grid-template-columns: 1.55fr 1fr; gap: 24px; margin: 0; padding: 0; list-style: none; }
 .project-grid--reverse { grid-template-columns: 1fr 1.55fr; }
@@ -144,10 +144,12 @@ a.project-card:hover { transform: translateY(-6px); border-color: rgba(29,42,36,
 .project-number { color: #5f675f; }
 
 .project-visual { position: relative; overflow: hidden; height: clamp(295px, 31vw, 430px); }
-.project-copy { display: grid; grid-template-columns: 1fr 1.15fr; gap: 25px; padding: 28px 7px 12px; }
+/* The 1fr row takes the card's spare height so every link sits on the card's bottom edge,
+   whether the copy is one column (h3, p, link) or two (h3 | p, then link). */
+.project-copy { display: grid; flex: 1 1 auto; grid-template-columns: 1fr 1.15fr; grid-template-rows: auto 1fr; gap: 25px; padding: 28px 7px 12px; }
 .project-copy h3 { margin: 0; font-size: clamp(24px, 2.4vw, 38px); font-weight: 500; line-height: 1.08; letter-spacing: -.045em; }
 .project-copy p { margin-bottom: 24px; color: #59635d; font-size: 14px; line-height: 1.65; }
-.project-link { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; }
+.project-link { display: inline-flex; align-self: end; justify-self: start; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; }
 .project-link svg { width: 14px; height: 14px; transition: transform .2s ease; }
 a.project-card:hover .project-link svg { transform: translate(3px, -3px); }
 .project-card:not(.project-card--wide) .project-copy { grid-template-columns: 1fr; }
@@ -225,7 +227,7 @@ a.project-card:hover .project-link svg { transform: translate(3px, -3px); }
 .contact-form { position: relative; padding: 36px; border: 1px solid rgba(231,236,230,.18); background: rgba(15,29,22,.3); backdrop-filter: blur(10px); }
 .contact-form .form-kicker { margin: 0 0 26px; }
 .contact-form label { display: block; margin-bottom: 22px; }
-.contact-form label > span { display: flex; justify-content: space-between; margin-bottom: 7px; color: #d8ded8; font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.contact-form label > span { display: flex; justify-content: space-between; margin-bottom: 7px; color: #d8ded8; font-size: 10px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
 .contact-form label > span em { color: #a5b0a8; font-style: normal; font-weight: 400; }
 .contact-form input, .contact-form textarea { width: 100%; border: 0; border-bottom: 1px solid rgba(231,236,230,.26); border-radius: 0; outline: 0; padding: 9px 0 12px; background: transparent; color: #f5f0e5; font: inherit; font-size: 15px; transition: border-color .2s; }
 .contact-form textarea { min-height: 126px; resize: vertical; line-height: 1.55; }
@@ -244,7 +246,7 @@ a.project-card:hover .project-link svg { transform: translate(3px, -3px); }
 .contact-hill--one { left: -20%; transform: rotate(9deg); }.contact-hill--two { right: -24%; transform: rotate(-8deg); }
 
 footer { display: flex; align-items: center; justify-content: space-between; min-height: 110px; padding: 25px 5vw; background: #17221d; color: #d8ded8; font-size: 11px; }
-footer p { margin: 0; color: #849087; text-transform: uppercase; letter-spacing: .1em; }
+footer p { margin: 0; color: #849087; font-size: 10px; text-transform: uppercase; letter-spacing: .12em; }
 footer > div { display: flex; align-items: center; gap: 22px; } footer > div a:hover { color: var(--sand); }
 
 @media (max-width: 900px) {

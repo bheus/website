@@ -14,6 +14,6 @@ JPEG (Chromium's `--screenshot` only writes PNG).
 CHROME=/path/to/chrome ./render.sh
 ```
 
-Fonts: the site asks for Iowan Old Style / SF Pro, which are macOS-only. `card.html`
-falls back to Bitstream Charter and Liberation Sans so a Linux render still matches
-the intended look. On a Mac the real faces are used and the output differs slightly.
+Fonts: `card.html` asks for the site's Iowan Old Style / SF Pro, which are macOS-only,
+so render on a Mac for a card that matches the site. A Linux render falls back to
+Bitstream Charter and Liberation Sans, which are close but visibly different.
