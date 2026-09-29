@@ -28,6 +28,43 @@ This is the canonical product, design, and implementation brief for agents worki
 - On desktop, align the portrait near the heading rather than vertically centering it against the entire copy-and-values column.
 - Preserve `object-fit: cover` and the current face-centered crop unless a replacement portrait is supplied.
 
+## Voice and Tone
+
+The copy in `src/App.jsx` is the source of truth for how Brendan sounds. Anything written
+in his name — site copy, invoices, client emails, form messages — should read as
+though it came from the same person.
+
+- **Serious about the work, light about himself.** The signature move is a straight setup
+  with a turn at the end: "I do serious software consulting *for fun.*" / "My friends call
+  me Moose. And when your project is a bear, you need big ideas."
+- **First person, spoken to "you."** Contractions, plain words, short sentences. It reads
+  like Brendan talking across a table, not a firm addressing a client.
+- **Confident without hype.** Claims are concrete ("hundreds of stores and thousands of
+  expert profiles") and qualifiers stay even inside a joke ("beat (basically) every hunch—
+  and, in historical testing, the S&P 500"). No superlatives, buzzwords, or urgency.
+- **Warm and inviting, never pushy.** "Go on, tell me." "I'll take you seriously." The
+  reader is invited to start a conversation, never sold to.
+- **One image at a time.** Playful imagery (a knot to untangle, a bear of a project,
+  finally closing your eyes) earns its place when it is short and not stacked with others.
+- **Small asides are welcome** — an em dash, a parenthetical "(basically)" — but no
+  exclamation points and no emoji.
+
+Match the register to the moment:
+
+- Headlines and introductions carry the wit.
+- Transactional text — errors, confirmations, invoices, anything about money or dates —
+  is clear first. It keeps the warmth (first person, plain words, an easy offer to reply)
+  but at most one light touch, and never a joke about an amount owed or a deadline.
+- Metadata and machine-facing text (meta and social tags, JSON-LD, `static/llms.txt`)
+  stays plainly factual and third person, but must not contradict the site's claims or
+  positioning.
+
+Avoid: "Dear valued client," "leverage," "solutions," "synergy," "please do not hesitate,"
+"available for work," and anything that sounds like a template.
+
+Brendan is a software consultant, never an "independent" or "freelance" one: he still has
+a day job, so positioning that implies full-time self-employment is inaccurate.
+
 ## Content Decisions
 
 The homepage separates **Professional work** from **Personal work**.

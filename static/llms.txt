@@ -1,11 +1,11 @@
 # Brendan Heussler
 
-> Independent software consultant in San Diego, California. Full-stack engineer who
-> turns complicated systems into products that feel simple, fast, and dependable.
+> Software consultant in San Diego, California. Full-stack engineer who
+> builds web platforms of all sizes, for real people of all kinds.
 
-Available for product engineering, scalable web platforms, AI and automation, and
+Works across product engineering, scalable web platforms, AI and automation, and
 technical strategy. Work spans high-traffic customer experiences at Intuit through to
-focused independent products. Enquiries go through the contact form on the site; there
+focused personal products. Enquiries go through the contact form on the site; there
 is no published email address or phone number.
 
 ## Professional work

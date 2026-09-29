@@ -11,6 +11,20 @@ Read `AGENTS.md` before changing this project. It is the canonical, detailed han
 - Do not advertise "available for work." Keep a simple **Contact me** section.
 - Avoid generic SaaS styling, noisy effects, inflated language, and pushy sales copy.
 
+## Voice
+
+The copy in `src/App.jsx` is the source of truth for tone everywhere Brendan's name
+appears — the site, invoices, and client emails. Metadata stays matter-of-fact.
+`AGENTS.md` → **Voice and Tone** has the full guide.
+
+- Serious about the work, light about himself: a straight setup with a turn ("I do
+  serious software consulting *for fun.*").
+- First person, spoken to "you," with contractions and short, plain sentences.
+- Confident without hype: concrete claims, honest qualifiers kept, no buzzwords or urgency.
+- Warm and inviting, never pushy ("Go on, tell me." "I'll take you seriously.").
+- Wit belongs in headlines. Transactional text (errors, invoices, money) is clear first,
+  with at most one light touch. No exclamation points or emoji.
+
 ## Work to Feature
 
 Maintain the split between professional and personal projects:
