@@ -135,7 +135,9 @@ carried by that document plus a few static files.
 - **Structured data:** one `application/ld+json` `@graph` in `index.html` — `WebSite`,
   `Person`, `ProfessionalService`, and one node per featured project. The
   `ProfessionalService` `contactPoint` carries the `#contact` URL and no address;
-  keep it that way, since the email must never reach the client.
+  keep it that way, since the email must never reach the client. Its `sameAs` links the
+  Google Business Profile by Knowledge Graph ID (`kgmid=/g/11zx_bp1j2`), not the
+  `share.google` shortlink, which only redirects to it.
 - **`static/llms.txt`:** the `llms.txt` convention (note the plural filename). It repeats
   the site's positioning and project descriptions as plain Markdown so an agent does not
   have to infer them from layout. It states Abraham's historical-testing qualifier
