@@ -190,12 +190,34 @@ The Dockerized site is available at `http://localhost` on host port **80**; the 
 
 Before handing off visual changes:
 
-1. Run `git diff --check`.
+1. Run `git diff --check` and `npm run test:e2e`.
 2. Run a production build, preferably `docker compose build`.
 3. Restart with `docker compose up -d` when local preview should reflect the change.
 4. Verify `http://127.0.0.1/health` returns `{"ok":true}`.
 5. Inspect both desktop and mobile layouts. Measure critical image dimensions in the browser when a crop or stretching bug is involved.
 6. Run Lighthouse for material frontend changes. The redesign previously reached 98 Performance and 100 Accessibility, Best Practices, and SEO; avoid regressions.
+
+## Integration and Visual Tests
+
+`npm run test:e2e` builds the site and runs the Playwright suite in `e2e/` against the
+real production server (`server/index.js`), with a fake Resend (`e2e/fake-resend.mjs`)
+reached through `RESEND_BASE_URL`. It covers the prerendered HTML, hydration, project
+destinations, the privacy and location copy rules, the portrait size, the contact
+form's success, failure, unconfigured, honeypot, timing and rate-limit paths, and
+exact-pixel screenshots at desktop (1440×900) and phone (390×844) sizes.
+
+- **Container only.** `e2e/run.sh` runs everything in the pinned
+  `mcr.microsoft.com/playwright` linux/arm64 image, whose tag follows the
+  `@playwright/test` version in `package-lock.json`. Baselines are exact, and Chromium
+  rasterizes differently elsewhere, so `playwright.config.js` refuses to run on the host.
+- **Approving a visual change.** A missing or different screenshot fails the run and is
+  never written automatically. When a change is intended, run
+  `npm run test:visual:update`, review the PNGs in `git diff`, and commit them. A full
+  run fails if a baseline is no longer used by any test; delete it.
+- **Reports.** `npm run test:e2e:report` opens the HTML report, including diffs.
+- **When it runs.** CI (`.github/workflows/e2e.yml`) runs it only on Dependabot PRs. The
+  pre-push hook runs it before any push that touches the site; enable it once per clone
+  with `git config core.hooksPath .githooks`.
 
 ## Access Logging and Traffic Dashboard
 
