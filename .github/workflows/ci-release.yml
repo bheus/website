@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@v7.0.1
 
       # Portainer deploys this compose file alone, with no .env and no override,
       # so every variable must interpolate from the default written here. A bad
