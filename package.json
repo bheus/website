@@ -15,8 +15,8 @@
     "test:e2e:report": "playwright show-report"
   },
   "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   },
   "devDependencies": {
     "@playwright/test": "^1.65.1",
