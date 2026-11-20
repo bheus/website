@@ -3,14 +3,19 @@ updates:
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: weekly
-      day: sunday
+      interval: monthly
     groups:
       # react-dom requires the same react major as a peer, so bumping either alone fails npm ci.
       react:
         patterns: ["react", "react-dom", "@types/react", "@types/react-dom"]
       npm-minor-and-patch:
         update-types: [minor, patch]
+
+  - package-ecosystem: npm
+    directory: /server
+    schedule:
+      interval: weekly
+      day: sunday
 
   - package-ecosystem: github-actions
     directory: /
