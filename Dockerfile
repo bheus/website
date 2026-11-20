@@ -19,7 +19,7 @@ FROM node:24.22.3-alpine
 WORKDIR /app
 
 COPY server/package*.json ./server/
-RUN cd server && npm install --omit=dev && npm cache clean --force
+RUN cd server && npm ci --omit=dev && npm cache clean --force
 COPY server/index.js ./server/index.js
 COPY --from=builder /app/public ./public
 
