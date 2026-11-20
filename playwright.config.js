@@ -64,5 +64,13 @@ export default defineConfig({
       stdout: 'ignore',
       stderr: 'pipe',
     },
+    {
+      command: 'node server/index.js',
+      url: 'http://127.0.0.1:8081/health',
+      env: { PORT: '8081', ACCESS_LOG: 'false' },
+      reuseExistingServer: false,
+      stdout: 'ignore',
+      stderr: 'pipe',
+    },
   ],
 })
