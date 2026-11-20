@@ -52,9 +52,14 @@ export default defineConfig({
   ],
   webServer: [
     {
+      command: 'node e2e/fake-resend.mjs',
+      url: 'http://127.0.0.1:8099/__health',
+      reuseExistingServer: false,
+    },
+    {
       command: 'node server/index.js',
       url: 'http://127.0.0.1:8080/health',
-      env: { PORT: '8080', ACCESS_LOG: 'false', ...contactEnv },
+      env: { PORT: '8080', ACCESS_LOG: 'false', ...contactEnv, RESEND_BASE_URL: 'http://127.0.0.1:8099' },
       reuseExistingServer: false,
       stdout: 'ignore',
       stderr: 'pipe',
