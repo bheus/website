@@ -22,12 +22,8 @@ updates:
     schedule:
       interval: monthly
 
-  # Stay on the Node 24 LTS line; major bumps are a deliberate runtime change.
   - package-ecosystem: docker
     directory: /
     schedule:
       interval: weekly
       day: sunday
-    ignore:
-      - dependency-name: node
-        update-types: [version-update:semver-major]
