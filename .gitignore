@@ -70,3 +70,6 @@ dist-ssr
 .DS_Store
 
 intuitgithookrc.yaml
+
+playwright-report
+test-results

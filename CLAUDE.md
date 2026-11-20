@@ -62,7 +62,7 @@ The exact approved destinations and current copy are documented in `AGENTS.md` a
 - Pushing to `master` autodeploys: CI publishes `ghcr.io/bheus/website:latest` and then triggers the Portainer `website` stack webhook on `apple-pi`.
 - `docker-compose.yml` is deployed by Portainer by itself. Keep it free of `build:` and give every variable an inline default. Local `docker compose build` comes from `docker-compose.override.yml`.
 - Do not deploy to `apple-pi` by hand unless Brendan explicitly requests it.
-- Validate material changes with `git diff --check`, a production build, desktop/mobile inspection, `/health`, and Lighthouse where appropriate.
+- Validate material changes with `git diff --check`, `npm run test:e2e` (see `AGENTS.md` → **Integration and Visual Tests**), a production build, desktop/mobile inspection, `/health`, and Lighthouse where appropriate.
 - Deployment is autodeploy only; there is no `deploy.sh` fallback.
 
 ## Known Issues

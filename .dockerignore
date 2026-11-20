@@ -22,3 +22,7 @@ docker-compose.override.yml
 public
 dist-ssr
 .github
+e2e
+playwright-report
+test-results
+.superpowers
