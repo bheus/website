@@ -9,6 +9,7 @@ const PROJECT_LINKS = {
 test('prerendered HTML is complete without JavaScript', async ({ request }) => {
   const html = await (await request.get('/')).text()
   expect(html).toContain('I do serious software consulting')
+  expect(html).toContain('San Diego, California')
   for (const id of ['id="work"', 'id="about"', 'id="contact"', 'class="contact-form"']) expect(html).toContain(id)
   for (const href of Object.values(PROJECT_LINKS)) expect(html).toContain(`href="${href}"`)
 })

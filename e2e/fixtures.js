@@ -1,3 +1,5 @@
+import { appendFileSync, mkdirSync } from 'node:fs'
+import { join } from 'node:path'
 import { test as base, expect } from '@playwright/test'
 
 const FAKE_RESEND = 'http://127.0.0.1:8099'
@@ -5,9 +7,6 @@ const FAKE_RESEND = 'http://127.0.0.1:8099'
 const FROZEN_AT = new Date('2026-06-15T12:00:00-07:00')
 
 const allowances = new WeakMap()
-const usedBaselines = new Set()
-
-export const recordedBaselines = () => usedBaselines
 
 /** Declare API failures or console errors this test expects to see. */
 export function allowFailures(page, matchers) {
@@ -27,7 +26,10 @@ function isAllowed(allowed, { path, status, console: text }) {
 /** toHaveScreenshot that records its baseline, so a full run can find unused ones. */
 export async function expectBaseline(target, name, options) {
   const info = base.info()
-  usedBaselines.add(info.snapshotPath(name, { kind: 'screenshot' }))
+  // Workers are separate processes; the teardown guard reads these files to find unused baselines.
+  const dir = join(info.project.outputDir, 'baselines')
+  mkdirSync(dir, { recursive: true })
+  appendFileSync(join(dir, `${info.testId}.txt`), `${info.snapshotPath(name, { kind: 'screenshot' })}\n`)
   await expect(target).toHaveScreenshot(name, options)
 }
 

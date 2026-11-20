@@ -22,6 +22,7 @@ export default defineConfig({
   // A missing baseline fails without being written: new screenshots are approved
   // only through `--update-snapshots`, never by a rerun.
   updateSnapshots: 'none',
+  globalTeardown: './e2e/global-teardown.js',
   reporter: [['list'], ['html', { open: 'never' }]],
   expect: {
     toHaveScreenshot: { maxDiffPixels: 0, threshold: 0, animations: 'disabled', caret: 'hide' },
@@ -33,6 +34,11 @@ export default defineConfig({
     colorScheme: 'light',
     reducedMotion: 'reduce',
     trace: 'retain-on-failure',
+    // Chromium's GPU and partial rasterization occasionally anti-aliases a curved
+    // border differently between identical runs (about 1 run in 12 at 0 px tolerance).
+    launchOptions: {
+      args: ['--disable-gpu', '--disable-partial-raster', '--disable-skia-runtime-opts', '--force-color-profile=srgb', '--font-render-hinting=none'],
+    },
   },
   projects: [
     {
