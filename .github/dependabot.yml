@@ -6,7 +6,7 @@ updates:
       interval: weekly
       day: sunday
     groups:
-      # react-dom pins react as an exact peer, so bumping either alone fails npm ci.
+      # react-dom requires the same react major as a peer, so bumping either alone fails npm ci.
       react:
         patterns: ["react", "react-dom", "@types/react", "@types/react-dom"]
       npm-minor-and-patch:
